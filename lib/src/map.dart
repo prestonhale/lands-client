@@ -1,0 +1,4 @@
+enum Cell {
+  wall,
+  open,
+}
