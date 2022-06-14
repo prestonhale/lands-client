@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Jun 13 08:37:58 2022
+# Make data base, printed on Mon Jun 13 17:43:57 2022
 
 # Variables
 
@@ -25,7 +25,7 @@ VBOX_MSI_INSTALL_PATH = C:\Program Files\Oracle\VirtualBox\
 # environment
 LOCALAPPDATA = C:\Users\thepr\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-5260daad-c621-433d-9176-9a5631ad91bb-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-b5c7f5d8-9f84-4937-8357-b6bd55e0a858-sock
 # environment
 VSCODE_CWD = C:\Users\thepr\AppData\Local\Programs\Microsoft VS Code
 # environment
@@ -43,7 +43,7 @@ GOPATH = C:\dev\go
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_13840_FPSYNOAORJEZYELG
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_16240_EASVTTGVBZAVCNPR
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
@@ -103,7 +103,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 13840
+VSCODE_PID = 16240
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -239,9 +239,9 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 151 Stepping 2, GenuineIntel
 
 # Directories
 
-# . (key c:/Users/thepr/Documents/lands, mtime 1654964918): 14 files, no impossibilities.
+# . (key c:/Users/thepr/Documents/lands, mtime 1655143541): 16 files, no impossibilities.
 
-# 14 files, no impossibilities in 1 directories.
+# 16 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -297,12 +297,12 @@ serve:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 20 / storage = 177 B / avg = 8 B
-# current buf: size = 8174 B / used = 177 B / count = 20 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 22 / storage = 203 B / avg = 9 B
+# current buf: size = 8174 B / used = 203 B / count = 22 / avg = 9 B
 
-# strcache performance: lookups = 28 / hit rate = 28%
+# strcache performance: lookups = 30 / hit rate = 26%
 # hash-table stats:
-# Load=20/8192=0%, Rehash=0, Collisions=0/28=0%
-# Finished Make data base on Mon Jun 13 08:37:58 2022
+# Load=22/8192=0%, Rehash=0, Collisions=0/30=0%
+# Finished Make data base on Mon Jun 13 17:43:57 2022
 
  
