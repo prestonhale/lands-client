@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:lands/src/content/content.dart';
 import 'package:lands/src/ui/input.dart';
+import 'package:lands/src/ui/game_screen.dart';
 
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
@@ -60,6 +61,8 @@ void main() {
   //   _resizeTerminal();
   // });
 
+  print("hey");
+
   _ui = UserInterface<Input>(_font.terminal);
 
   _ui.keyPress.bind(Input.n, KeyCode.w);
@@ -69,7 +72,7 @@ void main() {
 
   _ui.keyPress.bind(Input.interact, KeyCode.space);
 
-  _ui.push(GameScreen(content));
+  _ui.push(GameScreen.main(content));
 
   _ui.handlingInput = true;
   _ui.running = true;

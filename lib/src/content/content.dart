@@ -1,13 +1,9 @@
-import 'world.dart';
+import "package:lands/src/engine/core/game.dart";
 
 GameContent createContent() {
   return GameContent();
 }
 
-const island_width = 20;
-
-class GameContent {
-  Iterable<String> buildWorld(){
-    return TutorialIsland(island_width).generateIsland();
-  }
+class GameContent implements Content {
+  
 }

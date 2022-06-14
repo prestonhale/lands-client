@@ -1,5 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
+import 'package:lands/src/engine/core/game.dart';
+
 abstract class Actor{
   final Game game;
 

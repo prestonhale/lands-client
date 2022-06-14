@@ -8,7 +8,7 @@
             "name": "lands",
             "request": "launch",
             "type": "dart",
-            "program": "web/main.dart"
+            "program": "web/index.html",
         }
     ]
 }
