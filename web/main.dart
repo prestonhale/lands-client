@@ -61,8 +61,6 @@ void main() {
   //   _resizeTerminal();
   // });
 
-  print("hey");
-
   _ui = UserInterface<Input>(_font.terminal);
 
   _ui.keyPress.bind(Input.n, KeyCode.w);
@@ -88,9 +86,9 @@ void _addFont(String name, int charWidth, [int? charHeight]) {
   charHeight ??= charWidth;
 
   var canvas = html.CanvasElement();
-  // canvas.onDoubleClick.listen((_) {
-  //   _fullscreen();
-  // });
+  canvas.onDoubleClick.listen((_) {
+    _fullscreen();
+  });
 
   var terminal = _makeTerminal(canvas, charWidth, charHeight);
   _fonts.add(TerminalFont(name, canvas, terminal,
@@ -177,27 +175,27 @@ void _resizeTerminal() {
   var terminal = _makeTerminal(_font.canvas, _font.charWidth, _font.charHeight);
 
   _font.terminal = terminal;
-  // _ui.setTerminal(terminal);
+  _ui.setTerminal(terminal);
 }
 
 /// See: https://stackoverflow.com/a/29715395/9457
-// void _fullscreen() {
-//   var div = html.querySelector("#game")!;
-//   var jsElement = JsObject.fromBrowserObject(div);
+void _fullscreen() {
+  var div = html.querySelector("#game")!;
+  var jsElement = JsObject.fromBrowserObject(div);
 
-//   var methods = [
-//     "requestFullscreen",
-//     "mozRequestFullScreen",
-//     "webkitRequestFullscreen",
-//     "msRequestFullscreen"
-//   ];
-//   for (var method in methods) {
-//     if (jsElement.hasProperty(method)) {
-//       jsElement.callMethod(method);
-//       return;
-//     }
-//   }
-// }
+  var methods = [
+    "requestFullscreen",
+    "mozRequestFullScreen",
+    "webkitRequestFullscreen",
+    "msRequestFullscreen"
+  ];
+  for (var method in methods) {
+    if (jsElement.hasProperty(method)) {
+      jsElement.callMethod(method);
+      return;
+    }
+  }
+}
 
 // Future<void> _refreshDebugBoxes() async {
 //   // Hack: Give the engine a chance to update.
