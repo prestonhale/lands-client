@@ -9,13 +9,8 @@ import 'package:lands/src/ui/game_screen.dart';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 
-// import 'package:hauberk/src/content.dart';
-// import 'package:hauberk/src/debug.dart';
-// import 'package:hauberk/src/engine.dart';
-// import 'package:hauberk/src/ui/game_screen.dart';
-// import 'package:hauberk/src/ui/input.dart';
-// import 'package:hauberk/src/ui/main_menu_screen.dart';
-
+const terminalMinWidth = 10;
+const terminalMinHeight = 10;
 final _fonts = <TerminalFont>[];
 late final UserInterface<Input> _ui;
 late TerminalFont _font;
@@ -56,10 +51,10 @@ void main() {
   var div = html.querySelector("#game")!;
   div.append(_font.canvas);
 
-  // Scale the terminal to fit the screen.
-  // html.window.onResize.listen((_) {
-  //   _resizeTerminal();
-  // });
+  /// Scale the terminal to fit the screen.
+  html.window.onResize.listen((_) {
+    _resizeTerminal();
+  });
 
   _ui = UserInterface<Input>(_font.terminal);
 
@@ -148,8 +143,8 @@ RetroTerminal _makeTerminal(
   var width = (html.document.body!.clientWidth - 20) ~/ charWidth;
   var height = (html.document.body!.clientHeight - 30) ~/ charHeight;
 
-  width = math.max(width, 80);
-  height = math.max(height, 40);
+  width = math.max(width, terminalMinWidth);
+  height = math.max(height, terminalMinHeight);
 
   var scale = html.window.devicePixelRatio.toInt();
   var canvasWidth = charWidth * width;

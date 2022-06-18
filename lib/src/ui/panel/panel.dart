@@ -6,6 +6,9 @@ abstract class Panel {
 
   bool get isVisible => _bounds != null;
 
+  /// The bounding box for the panel.
+  ///
+  /// This can only be called if the panel is visible.
   Rect get bounds => _bounds!;
 
   void hide() {

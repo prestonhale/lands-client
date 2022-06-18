@@ -1,6 +1,6 @@
 import 'package:piecemeal/piecemeal.dart';
 
-import 'package:lands/src/content/tiles.dart';
+import 'package:lands/src/engine/stage/tile.dart';
 import 'package:lands/src/engine/core/game.dart';
 import 'package:lands/src/engine/core/actor.dart';
 
@@ -11,17 +11,17 @@ class Stage {
 
   final _actors = <Actor>[];
 
-  Stage(this.game, int width, [int? height])
-    : tiles = Array2D.generated(width, height ?? width, (_) => Tile()),
-      _actorsByTile = Array2D(width, height ?? width, null);
-  
+  int _currentActorIndex = 0;
 
-  Iterable<String> generateIsland() sync* {
-    // Cover placespace with sand
-    for (var pos in bounds){
-      tiles[pos].type = TileTypes.sand;
-    }
-  }
+  Actor get currentActor => _actors[_currentActorIndex];
+
+  int get width => tiles.width;
+
+  int get height => tiles.height;
+
+  Stage(this.game, int width, [int? height])
+      : tiles = Array2D.generated(width, height ?? width, (_) => Tile()),
+        _actorsByTile = Array2D(width, height ?? width, null);
 
   Tile operator [](Vec pos) => tiles[pos];
 
@@ -29,16 +29,22 @@ class Stage {
   ///
   /// This is a performance bottleneck since pathfinding needs to ensure it
   /// doesn't step on other actors.
-  /// 
-  /// TODO: Partion by world chunks or zones. This doesn't need to include the 
+  ///
+  /// TODO: Partion by world chunks or zones. This doesn't need to include the
   /// entire world state.
   final Array2D<Actor?> _actorsByTile;
+
+  Actor? actorAt(Vec pos) => _actorsByTile[pos];
 
   void addActor(Actor actor) {
     assert(_actorsByTile[actor.pos] == null);
 
     _actors.add(actor);
     _actorsByTile[actor.pos] = actor;
+  }
+
+  void advanceActor() {
+    _currentActorIndex = (_currentActorIndex + 1) % _actors.length;
   }
 
   void moveActor(Vec from, Vec to) {

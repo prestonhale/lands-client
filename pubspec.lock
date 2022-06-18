@@ -242,9 +242,9 @@ packages:
   malison:
     dependency: "direct main"
     description:
-      name: malison
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "C:/Users/thepr/Documents/malison"
+      relative: false
+    source: path
     version: "0.13.0"
   matcher:
     dependency: transitive
