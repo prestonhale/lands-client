@@ -54,14 +54,14 @@ class GamePanel extends Panel {
 
       var actor = game.stage.actorAt(pos);
       if (actor != null) {
-        var actorGlyph = actor.appearance;
-        if (actorGlyph is Glyph) {
-          glyph = actorGlyph as VecGlyph;
-        } else {
+        var appearance = actor.appearance;
+        if (appearance is Glyph) {
+          glyph = appearance as VecGlyph;
+        } else if (appearance is int){
           // Player.
           fore = _gameScreen.playerColor;
           back = glyph.back; // Use the tiles background color
-          glyph = CharGlyph.fromCharCode(CharCode.at, fore, back);
+          glyph = CharGlyph.fromCharCode(appearance, fore, back);
         }
       }
 

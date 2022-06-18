@@ -2,6 +2,7 @@ import 'package:lands/src/engine/core/actor.dart';
 import 'package:lands/src/engine/core/game.dart';
 import 'package:lands/src/engine/action/action.dart';
 import 'package:lands/src/engine/player/behavior.dart';
+import 'package:malison/malison.dart';
 
 import 'package:piecemeal/piecemeal.dart';
 
@@ -17,7 +18,30 @@ class Player extends Actor {
   }
 
   @override
-  Object get appearance => "player";
+  Object get appearance {
+    switch (direction) {
+      case Direction.n:
+        {
+          return CharCode.upwardsArrow;
+        }
+      case Direction.e:
+        {
+          return CharCode.rightwardsArrow;
+        }
+      case Direction.s:
+        {
+          return CharCode.downwardsArrow;
+        }
+      case Direction.w:
+        {
+          return CharCode.leftwardsArrow;
+        }
+      default:
+        {
+          return CharCode.questionMark;
+        }
+    }
+  }
 
   void setNextAction(Action action) {
     _behavior = ActionBehavior(action);
