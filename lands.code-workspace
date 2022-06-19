@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "..\\malison"
+		},
+		{
+			"path": "..\\piecemeal"
 		}
 	],
 	"settings": {}

@@ -2,6 +2,7 @@ import 'package:lands/src/engine/core/actor.dart';
 import 'package:lands/src/engine/core/game.dart';
 import 'package:lands/src/engine/action/action.dart';
 import 'package:lands/src/engine/player/behavior.dart';
+import 'package:lands/src/engine/stage/tile.dart';
 import 'package:malison/malison.dart';
 
 import 'package:piecemeal/piecemeal.dart';
@@ -15,6 +16,15 @@ class Player extends Actor {
   @override
   bool get needsInput {
     return _behavior == null;
+  }
+
+  Tile? get target {
+    try {
+      return game.stage.tileAt(pos + direction.adjustmentVec);
+    } on RangeError {
+      // We're pointing at the stage border
+      return null;
+    }
   }
 
   @override

@@ -17,10 +17,11 @@ class GameScreen extends Screen<Input> {
   final Game game;
 
   late final GamePanel _gamePanel;
-  final ResourcePanel _resourcePanel;
+  late final ResourcePanel _resourcePanel;
 
-  GameScreen(this.game) : _resourcePanel = ResourcePanel() {
+  GameScreen(this.game) {
     _gamePanel = GamePanel(this);
+    _resourcePanel = ResourcePanel(this);
   }
 
   factory GameScreen.main(Content content) {
@@ -66,15 +67,21 @@ class GameScreen extends Screen<Input> {
 
   @override
   void resize(Vec terminalSize) {
-    _gamePanel.show(Rect(0, 0, terminalSize.x, terminalSize.y));
-    _resourcePanel.show(Rect(
-        terminalSize.x~/2 - resourcePanelWidth~/2, 
-        0,
-        resourcePanelWidth, resourcePanelHeight));
+    _gamePanel.setBounds(Rect(0, 0, terminalSize.x, terminalSize.y));
+    _resourcePanel.setBounds(Rect(terminalSize.x ~/ 2 - resourcePanelWidth ~/ 2,
+        0, resourcePanelWidth, resourcePanelHeight));
   }
 
   @override
   void render(Terminal terminal) {
+    if (game.player.target == null) {
+      _resourcePanel.hide(terminal);
+    } else {
+      _resourcePanel.show();
+    }
+
+    // Order matters here. Later panels are rendered "on top of" earlier
+    // panels.
     terminal.clear();
     _gamePanel.render(terminal);
     _resourcePanel.render(terminal);

@@ -35,6 +35,8 @@ class Stage {
   final Array2D<Actor?> _actorsByTile;
 
   Actor? actorAt(Vec pos) => _actorsByTile[pos];
+  
+  Tile? tileAt(Vec pos) => tiles[pos];
 
   void addActor(Actor actor) {
     assert(_actorsByTile[actor.pos] == null);
