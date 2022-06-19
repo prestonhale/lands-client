@@ -10,7 +10,7 @@ import 'package:lands/src/engine/core/game.dart';
 import 'package:lands/src/engine/action/action.dart';
 import 'package:lands/src/engine/action/walk.dart';
 
-const resourcePanelWidth = 16;
+const resourcePanelWidth = 24;
 const resourcePanelHeight = 8;
 
 class GameScreen extends Screen<Input> {

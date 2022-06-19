@@ -19,6 +19,8 @@ class ResourcePanel extends Panel {
       // Player target is not null. If it was this panel would be hidden. See
       // GameScreen.render.
       var playerTarget = _gameScreen.game.player.target!;
+      // TODO: Get from playerTarget.
+      var quality = 75;
       Draw.frame(terminal, 0, 0, terminal.width, terminal.height);
       Draw.box(terminal, 2, 1, 3, 3);
 
@@ -28,7 +30,9 @@ class ResourcePanel extends Panel {
       terminal.drawGlyph(3, 2, playerTarget.type.appearance as Glyph);
       terminal.writeAt(5, 2, playerTarget.type.name);
 
-      Draw.thinMeter(terminal, 3, 5, 10, 5, 100, red, maroon);
+      terminal.writeAt(1, 5, "Quality");
+      terminal.writeAt(9, 5, quality.toString());
+      Draw.meter(terminal, 12, 5, terminal.width - 13, quality, 100, red, maroon);
     }
   }
 }
