@@ -4,6 +4,4 @@ GameContent createContent() {
   return GameContent();
 }
 
-class GameContent implements Content {
-  
-}
+class GameContent implements Content {}

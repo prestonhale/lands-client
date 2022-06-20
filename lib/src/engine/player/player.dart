@@ -2,7 +2,7 @@ import 'package:lands/src/engine/core/actor.dart';
 import 'package:lands/src/engine/core/game.dart';
 import 'package:lands/src/engine/action/action.dart';
 import 'package:lands/src/engine/player/behavior.dart';
-import 'package:lands/src/engine/stage/tile.dart';
+import 'package:lands/src/engine/stage/resource.dart';
 import 'package:malison/malison.dart';
 
 import 'package:piecemeal/piecemeal.dart';
@@ -18,9 +18,9 @@ class Player extends Actor {
     return _behavior == null;
   }
 
-  Tile? get target {
+  Resource? get target {
     try {
-      return game.stage.tileAt(pos + direction.adjustmentVec);
+      return game.stage.resourceAt(pos + direction.adjustmentVec);
     } on RangeError {
       // We're pointing at the stage border
       return null;

@@ -11,7 +11,6 @@ abstract class Actor {
   bool get needsInput => false;
 
   Vec _pos;
-  // Should non-player actors have directions;
 
   Vec get pos => _pos;
 
@@ -22,6 +21,7 @@ abstract class Actor {
     }
   }
 
+  // Should non-player actors have directions;
   Direction _direction;
 
   Direction get direction => _direction;

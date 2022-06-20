@@ -3,6 +3,7 @@ import 'package:piecemeal/piecemeal.dart';
 import 'package:lands/src/engine/stage/tile.dart';
 import 'package:lands/src/engine/core/game.dart';
 import 'package:lands/src/engine/core/actor.dart';
+import 'package:lands/src/engine/stage/resource.dart';
 
 class Stage {
   final Game game;
@@ -10,6 +11,8 @@ class Stage {
   Rect get bounds => tiles.bounds;
 
   final _actors = <Actor>[];
+
+  final _resources = <Resource>[];
 
   int _currentActorIndex = 0;
 
@@ -21,7 +24,8 @@ class Stage {
 
   Stage(this.game, int width, [int? height])
       : tiles = Array2D.generated(width, height ?? width, (_) => Tile()),
-        _actorsByTile = Array2D(width, height ?? width, null);
+        _actorsByTile = Array2D(width, height ?? width, null),
+        _resourcesByTile = Array2D(width, height ?? width, null);
 
   Tile operator [](Vec pos) => tiles[pos];
 
@@ -34,9 +38,13 @@ class Stage {
   /// entire world state.
   final Array2D<Actor?> _actorsByTile;
 
+  final Array2D<Resource?> _resourcesByTile;
+
   Actor? actorAt(Vec pos) => _actorsByTile[pos];
   
   Tile? tileAt(Vec pos) => tiles[pos];
+  
+  Resource? resourceAt(Vec pos) => _resourcesByTile[pos];
 
   void addActor(Actor actor) {
     assert(_actorsByTile[actor.pos] == null);
@@ -54,4 +62,10 @@ class Stage {
     _actorsByTile[from] = null;
     _actorsByTile[to] = actor;
   }
+
+  void addResource(Resource resource){
+    _resources.add(resource);
+    _resourcesByTile[resource.pos] = resource;
+  }
+
 }
