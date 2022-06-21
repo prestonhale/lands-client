@@ -10,10 +10,11 @@ class Tile {
 // is mostly constructed via [_TileBuilder].
 class TileType {
   // Type of tile when first constructed
-  static final uninitialized = TileType("uninitialized", null, false);
+  static final uninitialized =
+      TileType("uninitialized", malison.CharGlyph.clear, false);
 
   final String name;
-  final Object? appearance;
+  final Object appearance;
   final bool canEnter;
 
   TileType(this.name, this.appearance, this.canEnter);

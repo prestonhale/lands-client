@@ -20,7 +20,7 @@ class GamePanel extends Panel {
   bool _hasAnimatedTile = false;
 
   late Rect _cameraBounds;
-  
+
   /// The amount of offset the rendered stage from the top left corner of the
   /// screen.
   ///
@@ -38,10 +38,10 @@ class GamePanel extends Panel {
 
   @override
   void renderPanel(Terminal terminal) {
+    var game = _gameScreen.game;
+
     /// TODO: Should there be a max size to make gameplay fair?
     _positionCamera(terminal.size);
-
-    var game = _gameScreen.game;
 
     for (var pos in _cameraBounds) {
       Glyph? glyph;
@@ -57,7 +57,7 @@ class GamePanel extends Panel {
         var appearance = actor.appearance;
         if (appearance is Glyph) {
           glyph = appearance as VecGlyph;
-        } else if (appearance is int){
+        } else if (appearance is int) {
           // Player.
           fore = _gameScreen.playerColor;
           back = glyph.back; // Use the tiles background color
@@ -101,8 +101,8 @@ class GamePanel extends Panel {
   }
 
   void _drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
-    terminal.drawGlyph(x - _cameraBounds.x + _renderOffset.x, 
-      y - _cameraBounds.y + _renderOffset.y, glyph);
+    terminal.drawGlyph(x - _cameraBounds.x + _renderOffset.x,
+        y - _cameraBounds.y + _renderOffset.y, glyph);
   }
 
   void _positionCamera(Vec terminalSize) {
@@ -116,7 +116,9 @@ class GamePanel extends Panel {
 
     var camera = game.player.pos - terminalSize ~/ 2;
     camera = cameraRange.clamp(camera);
-    _cameraBounds = Rect(camera.x, camera.y, 
+    _cameraBounds = Rect(
+        camera.x,
+        camera.y,
         math.min(terminalSize.x, game.stage.width),
         math.min(terminalSize.y, game.stage.height));
 

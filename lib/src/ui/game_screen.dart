@@ -74,6 +74,10 @@ class GameScreen extends Screen<Input> {
 
   @override
   void render(Terminal terminal) {
+    if (!game.ready) {
+      return;
+    } 
+
     if (game.player.target == null) {
       _resourcePanel.hide(terminal);
     } else {
