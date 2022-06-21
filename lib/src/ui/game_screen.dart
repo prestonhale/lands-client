@@ -26,7 +26,8 @@ class GameScreen extends Screen<Input> {
 
   factory GameScreen.main(Content content) {
     var game = Game();
-    for (var _ in game.generate()) {}
+    print("generate");
+    for (var _ in game.generate());
 
     return GameScreen(game);
   }
@@ -76,7 +77,7 @@ class GameScreen extends Screen<Input> {
   void render(Terminal terminal) {
     if (!game.ready) {
       return;
-    } 
+    }
 
     if (game.player.target == null) {
       _resourcePanel.hide(terminal);

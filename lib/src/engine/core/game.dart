@@ -43,41 +43,44 @@ class Game {
   Game();
 
   Iterable<String> generate() sync* {
-    yield* buildTutorialIsland();
+    priasdnt("build tutorial island");
+    buildTutorialIsland();
   }
 
   // Async, stage will not be filled until this function returns
-  Iterable<String> buildTutorialIsland() sync* {
-    var path = 'island_layout.txt';
-    HttpRequest.getString(path).then((String islandLayout) {
-      LineSplitter ls = LineSplitter();
-      List<String> lines = ls.convert(islandLayout);
-      _stage = Stage(this, lines[0].length, lines.length);
-      for (var y = 0; y < lines.length; y++) {
-        for (var x = 0; x < lines[y].length; x++) {
-          var pos = Vec(x, y);
-          var locationType = _tileTypeMapping[lines[y][x]];
-          switch (locationType.runtimeType) {
-            case TileType:
-              stage[pos].type = locationType as TileType;
-              break;
-            case ResourceType:
-              var resource = Resource(locationType as ResourceType, pos);
-              // I don't like this as it embeds the resource tile appearance
-              // separetely from the resource itself.
-              stage[pos].type = resource.tile;
-              stage.addResource(resource);
-              break;
-            case Null:
-              stage[pos].type = TileTypes.error;
-              break;
-          }
+  void buildTutorialIsland() async {
+    var path = '../island_layout.txt';
+    print("game load started");
+    var islandLayout = await HttpRequest.getString(path);
+    print("game data received");
+    LineSplitter ls = LineSplitter();
+    List<String> lines = ls.convert(islandLayout);
+    _stage = Stage(this, lines[0].length, lines.length);
+    for (var y = 0; y < lines.length; y++) {
+      for (var x = 0; x < lines[y].length; x++) {
+        var pos = Vec(x, y);
+        var locationType = _tileTypeMapping[lines[y][x]];
+        switch (locationType.runtimeType) {
+          case TileType:
+            stage[pos].type = locationType as TileType;
+            break;
+          case ResourceType:
+            var resource = Resource(locationType as ResourceType, pos);
+            // I don't like this as it embeds the resource tile appearance
+            // separetely from the resource itself.
+            stage[pos].type = resource.tile;
+            stage.addResource(resource);
+            break;
+          case Null:
+            stage[pos].type = TileTypes.error;
+            break;
         }
       }
-      player = Player(this, stage.bounds.center);
-      _stage.addActor(player);
-      ready = true;
-    });
+    }
+    player = Player(this, stage.bounds.center);
+    _stage.addActor(player);
+    ready = true;
+    print("Game ready");
   }
 
   GameResult update() {
