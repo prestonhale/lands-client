@@ -43,16 +43,13 @@ class Game {
   Game();
 
   Iterable<String> generate() sync* {
-    priasdnt("build tutorial island");
     buildTutorialIsland();
   }
 
   // Async, stage will not be filled until this function returns
   void buildTutorialIsland() async {
     var path = '../island_layout.txt';
-    print("game load started");
     var islandLayout = await HttpRequest.getString(path);
-    print("game data received");
     LineSplitter ls = LineSplitter();
     List<String> lines = ls.convert(islandLayout);
     _stage = Stage(this, lines[0].length, lines.length);
@@ -80,7 +77,6 @@ class Game {
     player = Player(this, stage.bounds.center);
     _stage.addActor(player);
     ready = true;
-    print("Game ready");
   }
 
   GameResult update() {

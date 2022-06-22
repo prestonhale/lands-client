@@ -21,8 +21,8 @@ class Resource {
 
 /// A single kind of [Resource] in the game.
 class ResourceType {
-  static final cactus = ResourceType(TileTypes.cacti);
   static final reed = ResourceType(TileTypes.reed);
+  static final cactus = ResourceType(TileTypes.cacti);
 
   /// May change. Right now just represent all resources as a flat tile.
   /// This DOES couple the engine directly to the "stage".
