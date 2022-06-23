@@ -36,6 +36,7 @@ class TileTypes {
   static final reed = tile("reed", Vec(27, 7), sherwood, gold).open();
   static final water = tile("water", Vec(23, 7), lightBlue, blue).closed();
   static final cacti = tile("cacti", Vec(29, 4), peaGreen, gold).closed();
+  static final desert = [sand1, sand2, reed, water, cacti];
 
   // Forest
 

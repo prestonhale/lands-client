@@ -14,7 +14,7 @@ class Resource {
 
   TileType get tile => _type.tile;
 
-  Resource(this._type, this._pos){
+  Resource(this._type, this._pos) {
     quality = Random().nextInt(100);
   }
 }
@@ -23,6 +23,8 @@ class Resource {
 class ResourceType {
   static final reed = ResourceType(TileTypes.reed);
   static final cactus = ResourceType(TileTypes.cacti);
+
+  static final desert = [reed, cactus];
 
   /// May change. Right now just represent all resources as a flat tile.
   /// This DOES couple the engine directly to the "stage".
