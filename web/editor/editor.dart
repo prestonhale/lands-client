@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:convert' show utf8;
 
 import 'package:lands/src/engine/stage/tile.dart';
 import 'package:lands/src/ui/draw.dart';
@@ -55,13 +56,10 @@ void main() async {
   });
 
   canvas.onClick.listen((event) {
-    var tile = TileTypes.desert[selectedTileIndex];
-
-    var stage = _game.stage;
     var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt());
     var pos = terminal.pixelToChar(pixel);
 
-    stage[pos].type = tile;
+    placeSelection(pos);
 
     render();
   });
@@ -90,7 +88,7 @@ void main() async {
       var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt());
       var pos = terminal.pixelToChar(pixel);
 
-      stage[pos].type = TileTypes.desert[selectedTileIndex];
+      placeSelection(pos);
 
       render();
     }
@@ -100,20 +98,43 @@ void main() async {
     switch (event.keyCode) {
       case KeyCode.right:
         adjustSelection(1);
+        event.preventDefault();
         break;
       case KeyCode.left:
         adjustSelection(-1);
+        event.preventDefault();
         break;
       case KeyCode.down:
         switchTileOrResourceSelection();
+        event.preventDefault();
         break;
       case KeyCode.up:
         switchTileOrResourceSelection();
+        event.preventDefault();
+        break;
+      case KeyCode.s:
+        save();
+        event.preventDefault();
         break;
     }
-    event.preventDefault();
     render();
   });
+}
+
+void placeSelection(Vec pos) {
+  var stage = _game.stage;
+
+  // Placing a raw tile without resource.
+  if (selectedTileIndex != -1) {
+    stage[pos].type = TileTypes.desert[selectedTileIndex];
+
+    // Placing a resource and using its default tile.
+  } else {
+    ResourceType resourceType = ResourceType.desert[selectedResourceIndex];
+    var resource = Resource(resourceType, pos);
+    stage[pos].type = resource.tile;
+    stage.addResource(resource);
+  }
 }
 
 void adjustSelection(int adjustment) {
@@ -131,6 +152,7 @@ void adjustSelection(int adjustment) {
 void switchTileOrResourceSelection() {
   var tileLength = TileTypes.desert.length;
   var resourceLength = ResourceType.desert.length;
+
   if (selectedTileIndex != -1) {
     selectedResourceIndex = selectedTileIndex % resourceLength;
     selectedTileIndex = -1;
@@ -138,6 +160,53 @@ void switchTileOrResourceSelection() {
     selectedTileIndex = selectedResourceIndex % tileLength;
     selectedResourceIndex = -1;
   }
+}
+
+/// Immediately prompt to download the current stage layout as a txt file.
+void save() {
+  var stage = _game.stage;
+  print("saving");
+
+  var resourceMap = {
+    TileTypes.error: "?",
+    TileTypes.sea: "X",
+    TileTypes.sand1: "S",
+    TileTypes.sand2: "c",
+    TileTypes.water: "w",
+    TileTypes.sandstoneWall: "1",
+    TileTypes.sandstone1: "2",
+    ResourceType.cactus: "Y",
+    ResourceType.reed: "r",
+  };
+
+  var stringMap = "";
+
+  var prevRow = 0;
+  for (Vec pos in stage.bounds) {
+    late Object selector;
+    Resource? resource = stage.resourceAt(pos);
+    if (resource != null) {
+      selector = resource.type;
+    } else {
+      selector = stage.tileAt(pos)!.type;
+    }
+    print(selector.toString());
+    stringMap += resourceMap[selector]!;
+
+    // Reached the next row so add newline.
+    if (pos.y != prevRow) {
+      prevRow = pos.y;
+      stringMap += "\n";
+    }
+  }
+  print("generated");
+
+  html.AnchorElement()
+    ..href =
+        '${Uri.dataFromString(stringMap, mimeType: 'text/plain', encoding: utf8)}'
+    ..download = 'island_layout.txt'
+    ..style.display = 'none'
+    ..click();
 }
 
 Future<void> checkGame() async {
@@ -188,10 +257,13 @@ void render() {
   for (var i = 0; i < TileTypes.desert.length; i++) {
     var frameTopLeft = Vec(8 + (3 * i), 1);
     Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3);
+
     if (i == selectedTileIndex) {
       Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3, Color.white);
     }
+
     var appearance = TileTypes.desert[i].appearance;
+
     terminal.drawGlyph(
         frameTopLeft.x + 1, frameTopLeft.y + 1, appearance as VecGlyph);
   }
@@ -201,10 +273,13 @@ void render() {
   for (var i = 0; i < ResourceType.desert.length; i++) {
     var frameTopLeft = Vec(8 + (3 * i), 5);
     Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3);
-    if (selectedResourceIndex != null && i == selectedResourceIndex) {
+
+    if (i == selectedResourceIndex) {
       Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3, Color.white);
     }
-    var appearance = TileTypes.desert[i].appearance;
+
+    var appearance = ResourceType.desert[i].defaultTile.appearance;
+
     terminal.drawGlyph(
         frameTopLeft.x + 1, frameTopLeft.y + 1, appearance as VecGlyph);
   }

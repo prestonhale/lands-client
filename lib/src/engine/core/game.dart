@@ -19,12 +19,14 @@ import 'package:lands/src/engine/action/action.dart';
 /// B. Using an "overlay" map. Where one map defines the tiles and the second
 /// adds resources or potential resource spawn locations.
 final Map<String, dynamic> _tileTypeMapping = {
-  " ": TileTypes.sea,
+  "X": TileTypes.sea,
   "S": TileTypes.sand1,
   "c": TileTypes.sand2,
   "Y": ResourceType.cactus,
   "r": ResourceType.reed,
   "w": TileTypes.water,
+  "1": TileTypes.sandstoneWall,
+  "2": TileTypes.sandstone1,
 };
 
 class Game {
@@ -50,24 +52,29 @@ class Game {
   void buildTutorialIsland() async {
     var path = '../island_layout.txt';
     var islandLayout = await HttpRequest.getString(path);
+
     LineSplitter ls = LineSplitter();
     List<String> lines = ls.convert(islandLayout);
+
     _stage = Stage(this, lines[0].length, lines.length);
+
     for (var y = 0; y < lines.length; y++) {
       for (var x = 0; x < lines[y].length; x++) {
         var pos = Vec(x, y);
         var locationType = _tileTypeMapping[lines[y][x]];
+
         switch (locationType.runtimeType) {
+
           case TileType:
             stage[pos].type = locationType as TileType;
             break;
+
           case ResourceType:
             var resource = Resource(locationType as ResourceType, pos);
-            // I don't like this as it embeds the resource tile appearance
-            // separetely from the resource itself.
             stage[pos].type = resource.tile;
             stage.addResource(resource);
             break;
+
           case Null:
             stage[pos].type = TileTypes.error;
             break;
