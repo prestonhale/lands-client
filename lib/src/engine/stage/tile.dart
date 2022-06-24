@@ -5,9 +5,8 @@ import 'package:piecemeal/piecemeal.dart';
 import 'package:malison/malison.dart';
 import 'package:lands/src/engine/stage/resource.dart';
 
-class Tile {
-  Resource? resource;
 
+class Tile {
   TileType type = TileType.uninitialized;
 
   @override
