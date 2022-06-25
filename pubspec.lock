@@ -242,8 +242,8 @@ packages:
   malison:
     dependency: "direct main"
     description:
-      path: "C:/Users/thepr/Documents/malison"
-      relative: false
+      path: "../malison"
+      relative: true
     source: path
     version: "0.13.0"
   matcher:
@@ -284,8 +284,8 @@ packages:
   piecemeal:
     dependency: "direct main"
     description:
-      path: "C:/Users/thepr/Documents/piecemeal"
-      relative: false
+      path: "../piecemeal"
+      relative: true
     source: path
     version: "1.0.0"
   pool:

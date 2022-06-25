@@ -14,6 +14,7 @@ class Player extends Actor {
 
   Resource? camp;
 
+  Resource? carrying;
 
   // If we have a behavior, we don't need input.
   @override

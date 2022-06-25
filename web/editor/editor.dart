@@ -136,7 +136,7 @@ void placeSelection(Vec pos) {
     // Placing a resource and using its default tile.
   } else {
     ResourceType resourceType = ResourceType.desert[selectedResourceIndex];
-    var resource = Resource(_game, resourceType, pos);
+    var resource = resourceType.newResource(_game, pos);
     stage[pos].type = resource.tile;
     stage.addResource(resource);
   }

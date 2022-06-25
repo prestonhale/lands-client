@@ -13,11 +13,11 @@ class InteractAction extends Action {
     // Only player's can use the interact action.
     var player = actor as Player;
 
-    // If we're targeting a resource, attempt to harvest it.
+    // If we're targeting a resource, attempt to interact with it.
     late ActionResult result;
     var target = player.target;
     if (target != null) {
-      result = harvest(target);
+      result = target.interact(player);
 
       // If we're not targeting a resource, assume we'd like to setup camp.
     } else {
@@ -25,15 +25,6 @@ class InteractAction extends Action {
     }
 
     return result;
-  }
-
-  ActionResult harvest(Resource target) {
-    // Remove the resource from the map and replace with a felled resource.
-    print("[Interact] Attempted to harvest.");
-
-    target.harvest();
-
-    return ActionResult.success;
   }
 
   /// Add a camp object to the map.
@@ -58,7 +49,7 @@ class InteractAction extends Action {
       game.stage.removeResource(prevCamp);
     }
 
-    var camp = Resource(_player.game, ResourceType.camp, targetPos);
+    var camp = ResourceType.camp.newResource(_player.game, targetPos);
     _player.camp = camp;
     game.stage.addResource(camp);
     return ActionResult.success;

@@ -10,7 +10,7 @@
 			"path": "..\\malison"
 		},
 		{
-			"path": "..\\piecemeal"
+			"path": "../piecemeal"
 		}
 	],
 	"settings": {}
