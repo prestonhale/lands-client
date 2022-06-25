@@ -3,6 +3,7 @@ import 'dart:html' as html;
 import 'dart:convert' show utf8;
 
 import 'package:lands/src/engine/stage/tile.dart';
+import 'package:lands/src/engine/stage/serializer.dart';
 import 'package:lands/src/ui/draw.dart';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
@@ -127,6 +128,10 @@ void placeSelection(Vec pos) {
   // Placing a raw tile without resource.
   if (selectedTileIndex != -1) {
     stage[pos].type = TileTypes.desert[selectedTileIndex];
+    var resource = stage.resourceAt(pos);
+    if (resource != null) {
+      stage.removeResource(resource);
+    }
 
     // Placing a resource and using its default tile.
   } else {
@@ -167,37 +172,26 @@ void save() {
   var stage = _game.stage;
   print("saving");
 
-  var resourceMap = {
-    TileTypes.error: "?",
-    TileTypes.sea: "X",
-    TileTypes.sand1: "S",
-    TileTypes.sand2: "c",
-    TileTypes.water: "w",
-    TileTypes.sandstoneWall: "1",
-    TileTypes.sandstone1: "2",
-    ResourceType.cactus: "Y",
-    ResourceType.reed: "r",
-  };
-
   var stringMap = "";
 
   var prevRow = 0;
   for (Vec pos in stage.bounds) {
-    late Object selector;
-    Resource? resource = stage.resourceAt(pos);
-    if (resource != null) {
-      selector = resource.type;
-    } else {
-      selector = stage.tileAt(pos)!.type;
-    }
-    print(selector.toString());
-    stringMap += resourceMap[selector]!;
-
-    // Reached the next row so add newline.
     if (pos.y != prevRow) {
       prevRow = pos.y;
       stringMap += "\n";
     }
+
+    // "Dehydrate" the objects at this location on the map.
+    late SerializerCell cell;
+    Resource? resource = stage.resourceAt(pos);
+    if (resource != null) {
+      cell = SerializerCell.fromResource(resource.type);
+    } else {
+      cell = SerializerCell.fromTile(stage.tileAt(pos)!.type);
+    }
+    stringMap += cell.dehydrate();
+
+    // Reached the next row so add newline.
   }
   print("generated");
 
@@ -236,6 +230,7 @@ void render() {
       }
 
       var actor = stage.actorAt(pos);
+      var resource = stage.resourceAt(pos);
       if (actor != null) {
         var appearance = actor.appearance;
         if (appearance is Glyph) {
@@ -243,6 +238,8 @@ void render() {
         } else {
           // player
         }
+      } else if (resource != null) {
+        glyph = resource.appearance;
       }
 
       terminal.drawGlyph(x, y, glyph);
@@ -278,7 +275,7 @@ void render() {
       Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3, Color.white);
     }
 
-    var appearance = ResourceType.desert[i].defaultTile.appearance;
+    var appearance = ResourceType.desert[i].appearance;
 
     terminal.drawGlyph(
         frameTopLeft.x + 1, frameTopLeft.y + 1, appearance as VecGlyph);

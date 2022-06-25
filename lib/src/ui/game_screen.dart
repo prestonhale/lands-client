@@ -7,8 +7,11 @@ import 'package:lands/src/ui/panel/resource_panel.dart';
 import 'package:lands/src/ui/input.dart';
 import 'package:lands/src/hues.dart';
 import 'package:lands/src/engine/core/game.dart';
+
 import 'package:lands/src/engine/action/action.dart';
+import 'package:lands/src/engine/action/change_direction.dart';
 import 'package:lands/src/engine/action/walk.dart';
+import 'package:lands/src/engine/action/interact.dart';
 
 const resourcePanelWidth = 24;
 const resourcePanelHeight = 8;
@@ -36,6 +39,10 @@ class GameScreen extends Screen<Input> {
   bool handleInput(Input input) {
     Action? action;
     switch (input) {
+      case Input.interact:
+        action = InteractAction(game.player);
+        break;
+
       case Input.n:
         action = WalkAction(game.player, Direction.n);
         break;
@@ -47,6 +54,19 @@ class GameScreen extends Screen<Input> {
         break;
       case Input.w:
         action = WalkAction(game.player, Direction.w);
+        break;
+
+      case Input.dirN:
+        action = ChangeDirectionAction(game.player, Direction.n);
+        break;
+      case Input.dirE:
+        action = ChangeDirectionAction(game.player, Direction.e);
+        break;
+      case Input.dirS:
+        action = ChangeDirectionAction(game.player, Direction.s);
+        break;
+      case Input.dirW:
+        action = ChangeDirectionAction(game.player, Direction.w);
         break;
     }
 

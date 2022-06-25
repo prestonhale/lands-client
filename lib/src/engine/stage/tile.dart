@@ -5,7 +5,6 @@ import 'package:piecemeal/piecemeal.dart';
 import 'package:malison/malison.dart';
 import 'package:lands/src/engine/stage/resource.dart';
 
-
 class Tile {
   TileType type = TileType.uninitialized;
 
@@ -27,6 +26,9 @@ class TileType {
   final bool canEnter;
 
   TileType(this.name, this.appearance, this.canEnter);
+
+  @override
+  String toString() => "$name";
 }
 
 // Repository of pre-initialized tiles
@@ -34,6 +36,7 @@ class TileTypes {
   // TODO: Let some tiles have transparent backgrounds. Only actors have
   //  transparent backgrounds?
   // Debug
+
   static final error = tile("error", Vec(0, 0), purple).solid();
 
   // Empty
@@ -45,16 +48,16 @@ class TileTypes {
   // Walls.
   static final flagstoneWall =
       tile("flagstone wall", Vec(17, 5), lightWarmGray, warmGray).solid();
-  
+
   static final sandstoneWall =
       tile("sandstone wall", Vec(17, 5), sandal, tan).solid();
 
   static final graniteWall =
       tile("granite wall", Vec(17, 5), coolGray, darkCoolGray).solid();
-  
+
   static final sandstone1 = tile("sandstone", Vec(18, 5), sandal, gold)
       .blend(0.0, darkCoolGray, darkerCoolGray)
-      .solid();
+      .open();
 
   static final granite1 = tile("granite", Vec(18, 5), coolGray, darkCoolGray)
       .blend(0.0, darkCoolGray, darkerCoolGray)
@@ -63,32 +66,23 @@ class TileTypes {
   // Desert
   static final sand1 = tile("sand1", Vec(14, 7), warmGray, gold).open();
   static final sand2 = tile("sand2", Vec(13, 7), warmGray, gold).open();
-  static final reed = tile("reed", Vec(27, 7), sherwood, gold).open();
   static final water = tile("water", Vec(23, 7), lightBlue, blue).solid();
-  static final cacti = tile("cacti", Vec(29, 4), peaGreen, gold).solid();
+
   static final desert = [
     error,
-    shield,
-
-    flagstoneWall,
     sandstoneWall,
     sandstone1,
-
     graniteWall,
     granite1,
-
     sea,
     sand1,
     sand2,
-    reed,
     water,
-    cacti
   ];
 
   // Forest
 
-  static _TileBuilder tile(String name, Vec vec, Color fore,
-          [Color? back]) =>
+  static _TileBuilder tile(String name, Vec vec, Color fore, [Color? back]) =>
       _TileBuilder(name, vec, fore, back);
 }
 
@@ -104,8 +98,7 @@ class _TileBuilder {
     if (location is String || location is int) {
       var charCode =
           location is int ? location : (location as String).codeUnitAt(0);
-      return _TileBuilder._(
-          name, CharGlyph.fromCharCode(charCode, fore, back));
+      return _TileBuilder._(name, CharGlyph.fromCharCode(charCode, fore, back));
 
       // VecGlyph
     } else if (location is Vec) {

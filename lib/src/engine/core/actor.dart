@@ -46,7 +46,7 @@ abstract class Actor {
 
   Actor(this.game, int x, int y)
       : _pos = Vec(x, y),
-        _direction = Direction.n;
+        _direction = Direction.none;
 
   Action getAction() {
     var action = onGetAction();

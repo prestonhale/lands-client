@@ -41,9 +41,9 @@ class Stage {
   final Array2D<Resource?> _resourcesByTile;
 
   Actor? actorAt(Vec pos) => _actorsByTile[pos];
-  
+
   Tile? tileAt(Vec pos) => tiles[pos];
-  
+
   Resource? resourceAt(Vec pos) => _resourcesByTile[pos];
 
   void addActor(Actor actor) {
@@ -63,9 +63,17 @@ class Stage {
     _actorsByTile[to] = actor;
   }
 
-  void addResource(Resource resource){
+  void addResource(Resource resource) {
     _resources.add(resource);
     _resourcesByTile[resource.pos] = resource;
   }
 
+  void removeResource(Resource resource) {
+    assert(_resourcesByTile[resource.pos] == resource);
+
+    var index = _resources.indexOf(resource);
+    _resources.removeAt(index);
+
+    _resourcesByTile[resource.pos] = null;
+  }
 }

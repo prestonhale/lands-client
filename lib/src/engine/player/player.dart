@@ -12,6 +12,9 @@ class Player extends Actor {
 
   ActionBehavior? _behavior;
 
+  Resource? camp;
+
+
   // If we have a behavior, we don't need input.
   @override
   bool get needsInput {
@@ -19,6 +22,10 @@ class Player extends Actor {
   }
 
   Resource? get target {
+    if (direction == Direction.none) {
+      return null;
+    }
+
     try {
       return game.stage.resourceAt(pos + direction.adjustmentVec);
     } on RangeError {
@@ -30,6 +37,10 @@ class Player extends Actor {
   @override
   Object get appearance {
     switch (direction) {
+      case Direction.none:
+        {
+          return CharCode.at;
+        }
       case Direction.n:
         {
           return CharCode.upwardsArrow;

@@ -62,6 +62,11 @@ void main() {
   _ui.keyPress.bind(Input.e, KeyCode.d);
   _ui.keyPress.bind(Input.s, KeyCode.s);
   _ui.keyPress.bind(Input.w, KeyCode.a);
+  
+  _ui.keyPress.bind(Input.dirN, KeyCode.w, shift: true);
+  _ui.keyPress.bind(Input.dirE, KeyCode.d, shift: true);
+  _ui.keyPress.bind(Input.dirS, KeyCode.s, shift: true);
+  _ui.keyPress.bind(Input.dirW, KeyCode.a, shift: true);
 
   _ui.keyPress.bind(Input.interact, KeyCode.space);
 

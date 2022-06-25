@@ -26,8 +26,8 @@ class ResourcePanel extends Panel {
       // TODO: The player is the only thing NOT returning a glyph as
       //  appearance right now. If the player targets themselves(???) this
       //  will be a runtime error. Animated glyphs might also be an issue.
-      terminal.drawGlyph(3, 2, resource.tile.appearance as Glyph);
-      terminal.writeAt(5, 2, resource.tile.name);
+      terminal.drawGlyph(3, 2, resource.appearance);
+      terminal.writeAt(5, 2, resource.name);
 
       terminal.writeAt(1, 5, "Quality");
       terminal.writeAt(9, 5, resource.quality.toString());

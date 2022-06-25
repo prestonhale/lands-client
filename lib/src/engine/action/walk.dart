@@ -8,19 +8,14 @@ class WalkAction extends Action {
 
   @override
   ActionResult onPerform() {
-    // If we're already facing a direction, move that direction.
-    if (actor.direction == dir) {
-      var pos = actor.pos + dir;
+    actor.direction = Direction.none;
 
-      if (!actor.canOccupy(pos)) {
-        return ActionResult.failure;
-      }
-      actor.pos = pos;
+    var pos = actor.pos + dir;
 
-      // Otherwise, change our direction
-    } else {
-      actor.direction = dir;
+    if (!actor.canOccupy(pos)) {
+      return ActionResult.failure;
     }
+    actor.pos = pos;
 
     return ActionResult.success;
   }

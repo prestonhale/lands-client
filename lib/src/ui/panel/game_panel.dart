@@ -53,6 +53,7 @@ class GamePanel extends Panel {
       glyph = _tileGlyph(pos, tile);
 
       var actor = game.stage.actorAt(pos);
+      var resource = game.stage.resourceAt(pos);
       if (actor != null) {
         var appearance = actor.appearance;
         if (appearance is Glyph) {
@@ -63,6 +64,8 @@ class GamePanel extends Panel {
           back = glyph.back; // Use the tiles background color
           glyph = CharGlyph.fromCharCode(appearance, fore, back);
         }
+      } else if (resource != null) {
+        glyph = resource.appearance;
       }
 
       // TODO: No need to render empty tiles

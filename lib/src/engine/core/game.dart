@@ -8,26 +8,9 @@ import 'package:lands/src/engine/stage/resource.dart';
 import 'package:lands/src/engine/core/actor.dart';
 import 'package:lands/src/engine/stage/tile.dart';
 import 'package:lands/src/engine/stage/stage.dart';
+import 'package:lands/src/engine/stage/serializer.dart';
 import 'package:lands/src/engine/player/player.dart';
 import 'package:lands/src/engine/action/action.dart';
-
-/// Either a flat [Tile] or a [Resource] whose appearance is a tile.
-/// We could move away from this by:
-/// A. Spawning resources dynamically. Then the map editor would only include
-/// tiles.
-/// OR
-/// B. Using an "overlay" map. Where one map defines the tiles and the second
-/// adds resources or potential resource spawn locations.
-final Map<String, dynamic> _tileTypeMapping = {
-  "X": TileTypes.sea,
-  "S": TileTypes.sand1,
-  "c": TileTypes.sand2,
-  "Y": ResourceType.cactus,
-  "r": ResourceType.reed,
-  "w": TileTypes.water,
-  "1": TileTypes.sandstoneWall,
-  "2": TileTypes.sandstone1,
-};
 
 class Game {
   late Stage _stage;
@@ -50,6 +33,7 @@ class Game {
 
   // Async, stage will not be filled until this function returns
   void buildTutorialIsland() async {
+    print("[Layout Generation] Begin");
     var path = '../island_layout.txt';
     var islandLayout = await HttpRequest.getString(path);
 
@@ -61,29 +45,22 @@ class Game {
     for (var y = 0; y < lines.length; y++) {
       for (var x = 0; x < lines[y].length; x++) {
         var pos = Vec(x, y);
-        var locationType = _tileTypeMapping[lines[y][x]];
 
-        switch (locationType.runtimeType) {
-
-          case TileType:
-            stage[pos].type = locationType as TileType;
-            break;
-
-          case ResourceType:
-            var resource = Resource(locationType as ResourceType, pos);
-            stage[pos].type = resource.tile;
-            stage.addResource(resource);
-            break;
-
-          case Null:
-            stage[pos].type = TileTypes.error;
-            break;
+        // "Hydrate" a single character on the layout file into all the objects
+        // that make up that part of a stage.
+        if (lines[y][x] == '/n') continue;
+        var cell = SerializerCell.rehydrate(lines[y][x]);
+        stage[pos].type = cell.tile;
+        var resourceType = cell.resource;
+        if (resourceType != null) {
+          stage.addResource(Resource(resourceType, pos));
         }
       }
     }
     player = Player(this, stage.bounds.center);
     _stage.addActor(player);
     ready = true;
+    print("[Layout Generation] Done");
   }
 
   GameResult update() {
