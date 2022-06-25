@@ -53,7 +53,7 @@ class Game {
         stage[pos].type = cell.tile;
         var resourceType = cell.resource;
         if (resourceType != null) {
-          stage.addResource(Resource(resourceType, pos));
+          stage.addResource(Resource(this, resourceType, pos));
         }
       }
     }

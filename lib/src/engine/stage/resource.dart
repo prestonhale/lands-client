@@ -2,10 +2,13 @@ import 'dart:math';
 
 import 'package:malison/malison.dart';
 import 'package:piecemeal/piecemeal.dart';
+import 'package:lands/src/engine/core/game.dart';
 import 'package:lands/src/engine/stage/tile.dart';
 import 'package:lands/src/hues.dart';
 
 class Resource {
+  final Game game;
+
   final ResourceType _type;
 
   ResourceType get type => _type;
@@ -19,10 +22,14 @@ class Resource {
   TileType get tile => _type.defaultTile;
 
   Glyph get appearance => _type.appearance;
-  
+
   String get name => _type.name;
 
-  Resource(this._type, this._pos) {
+  void harvest() {
+    _type.harvest(this);
+  }
+
+  Resource(this.game, this._type, this._pos) {
     quality = Random().nextInt(100);
   }
 }
@@ -30,12 +37,22 @@ class Resource {
 /// A single kind of [Resource] in the game.
 class ResourceType {
   static final reed = ResourceType(
-      'reed', VecGlyph.fromVec(Vec(27, 7), sherwood, gold), TileTypes.sand1);
+      'reed',
+      VecGlyph.fromVec(Vec(27, 7), sherwood, gold),
+      TileTypes.sand1,
+      harvestNoOp);
+
   static final cactus = ResourceType(
-      'cactus', VecGlyph.fromVec(Vec(29, 4), peaGreen, gold), TileTypes.sand1);
-  
+      'cactus',
+      VecGlyph.fromVec(Vec(29, 4), peaGreen, gold),
+      TileTypes.sand1,
+      harvestCactus);
+
   static final camp = ResourceType(
-      'camp', VecGlyph.fromVec(Vec(3, 7), peaGreen, gold), TileTypes.flagstoneWall);
+      'camp',
+      VecGlyph.fromVec(Vec(3, 7), peaGreen, gold),
+      TileTypes.flagstoneWall,
+      harvestNoOp);
 
   static final desert = [reed, cactus];
 
@@ -47,9 +64,21 @@ class ResourceType {
   final String name;
   final Glyph appearance;
   final TileType defaultTile;
+  final void Function(Resource) harvest;
 
-  ResourceType(this.name, this.appearance, this.defaultTile);
+  ResourceType(this.name, this.appearance, this.defaultTile, this.harvest);
 
   @override
   String toString() => "${defaultTile}";
+
+  // TODO: Make polymorphic! This is only for cactuses.
+  //  Right now even camps can be harvested!
+}
+
+void harvestNoOp(Resource resource) {}
+
+void harvestCactus(Resource resource) {
+  var stage = resource.game.stage;
+  stage.removeResource(resource);
+  stage.addResource(Resource(resource.game, ResourceType.reed, resource.pos));
 }
