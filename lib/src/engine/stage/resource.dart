@@ -15,6 +15,7 @@ abstract class Interaction {
 }
 
 class CactusInteraction implements Interaction {
+  @override
   ActionResult interact(Resource resource, Actor actor) {
     print("[Interact] Cactus");
 
@@ -30,6 +31,7 @@ class CactusInteraction implements Interaction {
 }
 
 class CraftingInteraction implements Interaction {
+  @override
   ActionResult interact(Resource resource, Actor actor) {
     print("[Interact] Crafting");
     return ActionResult.success;
@@ -37,8 +39,10 @@ class CraftingInteraction implements Interaction {
 }
 
 class CampInteraction implements Interaction {
-  int cacti = 0;
+  int count = 0;
+  int max = 3;
 
+  @override
   ActionResult interact(Resource resource, Actor actor) {
     print("[Interact] Camp");
 
@@ -46,14 +50,19 @@ class CampInteraction implements Interaction {
 
     if (player.carrying != null) {
       player.carrying = null;
-      resource.cacti++;
       print("Deposited");
+      if (count == max) {
+        return ActionResult.failure;
+      } else {
+        count++;
+      }
     }
     return ActionResult.success;
   }
 }
 
 class NoOpInteraction implements Interaction {
+  @override
   ActionResult interact(Resource resource, Actor actor) {
     print("[Interact] NoOP");
     return ActionResult.success;
@@ -70,13 +79,17 @@ class NotargetPanel implements TargetPanelRenderer {
 }
 
 class HarvestTargetPanel implements TargetPanelRenderer {
+  @override
   void render(Resource resource, Terminal terminal) {
+    // Framing Box
     Draw.frame(terminal, 0, 0, terminal.width, terminal.height);
     Draw.box(terminal, 2, 1, 3, 3);
 
+    // Resource Image and Name
     terminal.drawGlyph(3, 2, resource.appearance);
     terminal.writeAt(5, 2, resource.name);
 
+    // Quality Bar
     terminal.writeAt(1, 5, "Quality");
     terminal.writeAt(9, 5, resource.quality.toString());
     Draw.meter(terminal, 12, 5, terminal.width - 13, resource.quality, 100, red,
@@ -85,19 +98,22 @@ class HarvestTargetPanel implements TargetPanelRenderer {
 }
 
 class CampTargetPanel implements TargetPanelRenderer {
+  @override
   void render(Resource resource, Terminal terminal) {
+    var interaction = resource.interaction as CampInteraction;
+    // Framing Box
     Draw.frame(terminal, 0, 0, terminal.width, terminal.height);
     Draw.box(terminal, 2, 1, 3, 3);
 
-    // Show the target's appearance in a small box
+    // Camp image
     terminal.drawGlyph(3, 2, resource.appearance);
     terminal.writeAt(5, 2, resource.name);
 
-    // Stats
+    // Amount collected
     terminal.writeAt(1, 5, "Cactus");
-    terminal.writeAt(9, 5, resource.cacti.toString());
-    Draw.meter(terminal, 12, 5, terminal.width - 13, resource.cacti, 100, red,
-        maroon);
+    terminal.writeAt(9, 5, interaction.count.toString());
+    Draw.chunkedMeter(
+        terminal, 12, 5, terminal.width - 13, interaction.count, interaction.max, red, maroon);
   }
 }
 
@@ -112,8 +128,6 @@ class Resource {
 
   late final int quality;
 
-  int cacti = 0;
-
   Vec get pos => _pos;
 
   TileType get tile => _type.defaultTile;
@@ -122,13 +136,19 @@ class Resource {
 
   String get name => _type.name;
 
-  ActionResult interact(Actor actor) => _type.interact(this, actor);
+  final Interaction _interaction;
+
+  Interaction get interaction => _interaction;
+
+  ActionResult interact(Actor actor) {
+    return _interaction.interact(this, actor);
+  }
 
   void renderTargetPanel(Terminal terminal) =>
       _type.renderTargetPanel(this, terminal);
 
   // A private constructor. The only way to create a resource is via [ResourceType.newResource()].
-  Resource._(this.game, this._type, this._pos) {
+  Resource._(this.game, this._type, this._pos, this._interaction) {
     quality = Random().nextInt(100);
   }
 }
@@ -139,33 +159,33 @@ class ResourceType {
       'reed',
       VecGlyph.fromVec(Vec(27, 7), sherwood, gold),
       TileTypes.sand1,
-      NoOpInteraction(),
+      () => NoOpInteraction(),
       HarvestTargetPanel());
 
   static final cactus = ResourceType(
       'cactus',
       VecGlyph.fromVec(Vec(29, 4), peaGreen, gold),
       TileTypes.sand1,
-      CactusInteraction(),
+      () => CactusInteraction(),
       HarvestTargetPanel());
 
   static final camp = ResourceType(
       'camp',
       VecGlyph.fromVec(Vec(3, 7), peaGreen, gold),
       TileTypes.flagstoneWall,
-      CampInteraction(),
+      () => CampInteraction(),
       CampTargetPanel());
 
   static final craftingSpot = ResourceType(
       'crafting spot',
       VecGlyph.fromVec(Vec(3, 7), peaGreen, gold),
       TileTypes.flagstoneWall,
-      CraftingInteraction(),
+      () => CraftingInteraction(),
       NotargetPanel());
 
   static final desert = [reed, cactus];
 
-  final Interaction _interaction;
+  final Interaction Function() _interaction;
 
   final TargetPanelRenderer _panelRenderer;
 
@@ -173,11 +193,8 @@ class ResourceType {
       this._panelRenderer);
 
   Resource newResource(Game game, Vec pos) {
-    return Resource._(game, this, pos);
-  }
-
-  ActionResult interact(Resource resource, Actor actor) {
-    return _interaction.interact(resource, actor);
+    var interaction = _interaction();
+    return Resource._(game, this, pos, interaction);
   }
 
   void renderTargetPanel(Resource resource, Terminal terminal) =>

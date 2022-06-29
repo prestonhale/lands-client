@@ -98,4 +98,38 @@ class Draw {
       terminal.drawChar(x + i, y, CharCode.lowerHalfBlock, color);
     }
   }
+
+  static void chunkedMeter(
+      Terminal terminal, int x, int y, int width, int value, int max,
+      [Color? fore, Color? back]) {
+    assert(max != 0);
+    fore ??= red;
+    back ??= maroon;
+
+    var barWidth = (width * value / max).round();
+    var chunkWidth = (width / max).round();
+    // In cases where the width is not divisible evenly by the chunk size the
+    // last chunk will be slightly smaller.
+
+    // Edge cases, don't show an empty or full bar unless we're all the
+    // way empty or full.
+    if (barWidth == 0 && value > 0) barWidth = 1;
+    if (barWidth == width && value < max) barWidth = width - 1;
+
+    for (var i = 0; i < width; i++) {
+      print(i);
+      print(barWidth);
+      if (barWidth == width) fore = Color.green;
+      var color = i < barWidth ? fore : back;
+
+      // At the end of a chunk draw only the left half of the block
+      if ((i + 1) % chunkWidth == 0) {
+        // Ensure the trailing half-block is filled
+        if ((i - 1) < barWidth) color = fore;
+        terminal.drawChar(x + i, y, CharCode.leftHalfBlock, color);
+      } else {
+        terminal.drawChar(x + i, y, CharCode.fullBlock, color);
+      }
+    }
+  }
 }
