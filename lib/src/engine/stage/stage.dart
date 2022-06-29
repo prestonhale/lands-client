@@ -46,6 +46,16 @@ class Stage {
 
   Resource? resourceAt(Vec pos) => _resourcesByTile[pos];
 
+  Vec? getAdjacentEmptyPosition(Vec pos) {
+    for (Direction dir in Direction.all) {
+      var checkPos = pos + dir.adjustmentVec;
+      if (resourceAt(checkPos) == null && actorAt(checkPos) == null) {
+        return checkPos;
+      }
+    }
+    return null;
+  }
+
   void addActor(Actor actor) {
     assert(_actorsByTile[actor.pos] == null);
 

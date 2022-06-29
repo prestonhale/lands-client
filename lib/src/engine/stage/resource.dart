@@ -38,9 +38,17 @@ class CraftingInteraction implements Interaction {
   }
 }
 
+class PackInteraction implements Interaction {
+  @override
+  ActionResult interact(Resource resource, Actor actor) {
+    print("[Interact] Pack");
+    return ActionResult.success;
+  }
+}
+
 class CampInteraction implements Interaction {
   int count = 0;
-  int max = 3;
+  int max = 1;
 
   @override
   ActionResult interact(Resource resource, Actor actor) {
@@ -49,8 +57,11 @@ class CampInteraction implements Interaction {
     var player = actor as Player;
 
     if (count == max) {
-      print("Will deposit");
+      var success = givePackToPlayer(resource, player);
+      if (success) count = 0;
+      return ActionResult.success;
     }
+
     if (player.carrying != null) {
       player.carrying = null;
       if (count == max) {
@@ -60,6 +71,32 @@ class CampInteraction implements Interaction {
       }
     }
     return ActionResult.success;
+  }
+
+  /// Gives the [Pack] to the player if the player's carry slot is free.
+  /// Otherwise drops it on the ground in an adjacent square.
+  bool givePackToPlayer(Resource camp, Player player) {
+    var stage = player.game.stage;
+
+    if (player.carrying == null) {
+      var resource =
+          ResourceType.cactusPack.newResource(player.game, player.pos);
+      player.carrying = resource;
+    } else {
+      var foundPos = stage.getAdjacentEmptyPosition(camp.pos);
+
+      if (foundPos != null) {
+        var resource =
+            ResourceType.cactusPack.newResource(player.game, foundPos);
+        stage.addResource(resource);
+      } else {
+        // There's no adjacent empty positions, do not empty camp and do not 
+        // produce a pack.
+        return false;
+      }
+    }
+
+    return true;
   }
 }
 
@@ -76,7 +113,7 @@ abstract class TargetPanelRenderer {
   void render(Resource resource, Terminal terminal);
 }
 
-class NotargetPanel implements TargetPanelRenderer {
+class NoTargetPanel implements TargetPanelRenderer {
   void render(Resource resource, Terminal terminal) {}
 }
 
@@ -188,7 +225,18 @@ class ResourceType {
       TileTypes.flagstoneWall,
       true,
       () => CraftingInteraction(),
-      NotargetPanel());
+      NoTargetPanel());
+
+  // This could be a generic "pack" but then we'd need the concept of a
+  // ResourceType...type. E.g. we'd need to parametrize the pack at creation
+  // with a resource type (a pack OF cactus).
+  static final cactusPack = ResourceType(
+      'cactusPack2',
+      VecGlyph.fromVec(Vec(29, 4), peaGreen, gold),
+      TileTypes.sand1,
+      true,
+      () => NoOpInteraction(),
+      NoTargetPanel());
 
   static final desert = [reed, cactus];
 
