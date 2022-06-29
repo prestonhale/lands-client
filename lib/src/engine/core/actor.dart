@@ -66,6 +66,10 @@ abstract class Actor {
     if (pos.y < 0) return false;
     if (pos.y >= game.stage.height) return false;
 
+    var resource = game.stage.resourceAt(pos);
+    if (resource != null) {
+      return !resource.solid;
+    }
     var tile = game.stage[pos];
     return tile.type.canEnter;
   }

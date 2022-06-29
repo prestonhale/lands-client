@@ -48,6 +48,9 @@ class CampInteraction implements Interaction {
 
     var player = actor as Player;
 
+    if (count == max) {
+      print("Will deposit");
+    }
     if (player.carrying != null) {
       player.carrying = null;
       if (count == max) {
@@ -111,7 +114,8 @@ class CampTargetPanel implements TargetPanelRenderer {
     // Amount collected
     terminal.writeAt(1, 5, "Cactus");
     terminal.writeAt(9, 5, interaction.count.toString());
-    var meterColors = TriPhaseColor(fore: red, back: maroon, complete: sherwood);
+    var meterColors =
+        TriPhaseColor(fore: red, back: maroon, complete: sherwood);
     Draw.chunkedMeter(terminal, 12, 5, terminal.width - 13, interaction.count,
         interaction.max, meterColors);
   }
@@ -121,14 +125,12 @@ class Resource {
   final Game game;
 
   final ResourceType _type;
-
   ResourceType get type => _type;
 
   final Vec _pos;
+  Vec get pos => _pos;
 
   late final int quality;
-
-  Vec get pos => _pos;
 
   TileType get tile => _type.defaultTile;
 
@@ -136,8 +138,9 @@ class Resource {
 
   String get name => _type.name;
 
-  final Interaction _interaction;
+  bool get solid => _type.solid;
 
+  final Interaction _interaction;
   Interaction get interaction => _interaction;
 
   ActionResult interact(Actor actor) {
@@ -159,6 +162,7 @@ class ResourceType {
       'reed',
       VecGlyph.fromVec(Vec(27, 7), sherwood, gold),
       TileTypes.sand1,
+      false,
       () => NoOpInteraction(),
       HarvestTargetPanel());
 
@@ -166,6 +170,7 @@ class ResourceType {
       'cactus',
       VecGlyph.fromVec(Vec(29, 4), peaGreen, gold),
       TileTypes.sand1,
+      true,
       () => CactusInteraction(),
       HarvestTargetPanel());
 
@@ -173,6 +178,7 @@ class ResourceType {
       'camp',
       VecGlyph.fromVec(Vec(3, 7), peaGreen, gold),
       TileTypes.flagstoneWall,
+      true,
       () => CampInteraction(),
       CampTargetPanel());
 
@@ -180,17 +186,20 @@ class ResourceType {
       'crafting spot',
       VecGlyph.fromVec(Vec(3, 7), peaGreen, gold),
       TileTypes.flagstoneWall,
+      true,
       () => CraftingInteraction(),
       NotargetPanel());
 
   static final desert = [reed, cactus];
 
+  final bool solid;
+
   final Interaction Function() _interaction;
 
   final TargetPanelRenderer _panelRenderer;
 
-  ResourceType(this.name, this.appearance, this.defaultTile, this._interaction,
-      this._panelRenderer);
+  ResourceType(this.name, this.appearance, this.defaultTile, this.solid,
+      this._interaction, this._panelRenderer);
 
   Resource newResource(Game game, Vec pos) {
     var interaction = _interaction();
