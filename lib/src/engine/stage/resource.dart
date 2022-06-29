@@ -50,7 +50,6 @@ class CampInteraction implements Interaction {
 
     if (player.carrying != null) {
       player.carrying = null;
-      print("Deposited");
       if (count == max) {
         return ActionResult.failure;
       } else {
@@ -112,8 +111,9 @@ class CampTargetPanel implements TargetPanelRenderer {
     // Amount collected
     terminal.writeAt(1, 5, "Cactus");
     terminal.writeAt(9, 5, interaction.count.toString());
-    Draw.chunkedMeter(
-        terminal, 12, 5, terminal.width - 13, interaction.count, interaction.max, red, maroon);
+    var meterColors = TriPhaseColor(fore: red, back: maroon, complete: sherwood);
+    Draw.chunkedMeter(terminal, 12, 5, terminal.width - 13, interaction.count,
+        interaction.max, meterColors);
   }
 }
 

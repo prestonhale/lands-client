@@ -101,10 +101,10 @@ class Draw {
 
   static void chunkedMeter(
       Terminal terminal, int x, int y, int width, int value, int max,
-      [Color? fore, Color? back]) {
+      [TriPhaseColor? colors]) {
     assert(max != 0);
-    fore ??= red;
-    back ??= maroon;
+    var fore = colors != null ? colors.fore : red;
+    var back = colors != null ? colors.back : maroon;
 
     var barWidth = (width * value / max).round();
     var chunkWidth = (width / max).round();
@@ -117,9 +117,7 @@ class Draw {
     if (barWidth == width && value < max) barWidth = width - 1;
 
     for (var i = 0; i < width; i++) {
-      print(i);
-      print(barWidth);
-      if (barWidth == width) fore = Color.green;
+      if (barWidth == width && colors?.complete != null) fore = Color.green;
       var color = i < barWidth ? fore : back;
 
       // At the end of a chunk draw only the left half of the block
