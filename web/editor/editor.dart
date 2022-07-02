@@ -15,6 +15,8 @@ final canvas = html.querySelector("canvas#editor") as html.CanvasElement;
 final document = html.document;
 late RenderableTerminal terminal;
 
+var charSize = 16;
+
 int selectedTileIndex = 0;
 int selectedResourceIndex = -1;
 bool _placing = false;
@@ -22,24 +24,20 @@ bool _placing = false;
 Game _game = Game();
 
 void main() async {
-  // Get file
-  // Process with the game object
-  // Render with the terminal
-  // Detect clicks and update to XXX
-  // Save file
   _game = Game();
   for (var _ in _game.generate()) {}
   // Wait for the game to be ready.
   await checkGame();
 
   var stage = _game.stage;
+  var selectionPanelOffset = charSize * 11;
 
   // TODO: Make this work with browser scale not just terminal scale.
-  var scale = 3;
-  terminal = RetroTerminal(stage.width, stage.height, "../font_8.png",
-      canvas: canvas, charWidth: 8, charHeight: 8, scale: scale);
-  canvas.width = (stage.width * 8 * scale).round();
-  canvas.height = (stage.height * 8 * scale).round();
+  var scale = 1;
+  terminal = RetroTerminal(stage.width, stage.height + selectionPanelOffset, "../font_16.png",
+      canvas: canvas, charWidth: charSize, charHeight: charSize, scale: scale);
+  canvas.width = (stage.width * charSize * scale).round();
+  canvas.height = (stage.height * charSize * scale + selectionPanelOffset).round();
   render();
 
   // contextMenu is 'javascript' for right-click.
@@ -47,7 +45,7 @@ void main() async {
     var tile = TileTypes.sand1;
 
     var stage = _game.stage;
-    var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt());
+    var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt() - selectionPanelOffset);
     var pos = terminal.pixelToChar(pixel);
 
     stage[pos].type = tile;
@@ -57,7 +55,8 @@ void main() async {
   });
 
   canvas.onClick.listen((event) {
-    var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt());
+    var pixel = Vec(
+        event.offset.x.toInt(), event.offset.y.toInt() - selectionPanelOffset);
     var pos = terminal.pixelToChar(pixel);
 
     placeSelection(pos);
@@ -86,7 +85,7 @@ void main() async {
     //  same square atm. Does this matter?
     if (_placing) {
       var stage = _game.stage;
-      var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt());
+      var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt() - selectionPanelOffset);
       var pos = terminal.pixelToChar(pixel);
 
       placeSelection(pos);
@@ -118,6 +117,10 @@ void main() async {
         event.preventDefault();
         break;
     }
+    render();
+  });
+
+  document.onScroll.listen((_) {
     render();
   });
 }
@@ -212,8 +215,20 @@ Future<void> checkGame() async {
 
 // Todo: Synchronize this with the actual game render func
 void render() {
-  var stage = _game.stage;
+  renderGameStage(terminal.rect(0, 11, _game.stage.width, _game.stage.height));
 
+  // TODO: The scroll on this is pretty janky. Consider breaking the map out
+  //  into its own terminal rather than relying on browser based scroll events.
+  var x = html.window.scrollX ~/ charSize;
+  var y = html.window.scrollY ~/ charSize;
+  var viewportWidth = document.documentElement!.clientWidth ~/ charSize;
+  renderSelectionBox(terminal.rect(x, y, viewportWidth, 11));
+
+  terminal.render();
+}
+
+void renderGameStage(Terminal terminal) {
+  var stage = _game.stage;
   for (var y = 0; y < stage.height; y++) {
     for (var x = 0; x < stage.width; x++) {
       var pos = Vec(x, y);
@@ -232,12 +247,7 @@ void render() {
       var actor = stage.actorAt(pos);
       var resource = stage.resourceAt(pos);
       if (actor != null) {
-        var appearance = actor.appearance;
-        if (appearance is Glyph) {
-          glyph = appearance as VecGlyph;
-        } else {
-          // player
-        }
+        glyph = actor.appearance as Glyph;
       } else if (resource != null) {
         glyph = resource.appearance;
       }
@@ -245,11 +255,14 @@ void render() {
       terminal.drawGlyph(x, y, glyph);
     }
   }
+}
 
+void renderSelectionBox(Terminal terminal) {
   // Panel holding selections.
-  Draw.doubleBox(terminal, 0, 0, terminal.width, 10);
+  Draw.doubleBox(terminal, 0, 0, terminal.width, terminal.height);
+  terminal.writeAt(2, 0, "Game Objects");
 
-  // First row, tiles.
+  // Tiles.
   terminal.writeAt(1, 2, "Tiles:");
   for (var i = 0; i < TileTypes.desert.length; i++) {
     var frameTopLeft = Vec(8 + (3 * i), 1);
@@ -265,10 +278,10 @@ void render() {
         frameTopLeft.x + 1, frameTopLeft.y + 1, appearance as VecGlyph);
   }
 
-  // Second row, resources.
-  terminal.writeAt(1, 6, "Resrcs:");
+  // Harvestables.
+  terminal.writeAt(1, 5, "Resrcs:");
   for (var i = 0; i < ResourceType.desert.length; i++) {
-    var frameTopLeft = Vec(8 + (3 * i), 5);
+    var frameTopLeft = Vec(8 + (3 * i), 4);
     Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3);
 
     if (i == selectedResourceIndex) {
@@ -281,5 +294,19 @@ void render() {
         frameTopLeft.x + 1, frameTopLeft.y + 1, appearance as VecGlyph);
   }
 
-  terminal.render();
+  // Special
+  terminal.writeAt(1, 8, "Special:");
+  for (var i = 0; i < ResourceType.desert.length; i++) {
+    var frameTopLeft = Vec(8 + (3 * i), 7);
+    Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3);
+
+    if (i == selectedResourceIndex) {
+      Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3, Color.white);
+    }
+
+    var appearance = ResourceType.desert[i].appearance;
+
+    terminal.drawGlyph(
+        frameTopLeft.x + 1, frameTopLeft.y + 1, appearance as VecGlyph);
+  }
 }

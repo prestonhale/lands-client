@@ -48,7 +48,7 @@ class PackInteraction implements Interaction {
 
 class CampInteraction implements Interaction {
   int count = 0;
-  int max = 1;
+  int max = 3;
 
   @override
   ActionResult interact(Resource resource, Actor actor) {
