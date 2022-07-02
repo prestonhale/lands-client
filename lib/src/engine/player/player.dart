@@ -24,30 +24,33 @@ class Player extends Actor {
 
   @override
   Object get appearance {
+    if (carrying != null){
+      return CharGlyph.fromCharCode(CharCode.at, Color.green);
+    }
     switch (direction) {
       case Direction.none:
         {
-          return CharCode.at;
+          return CharGlyph.fromCharCode(CharCode.at);
         }
       case Direction.n:
         {
-          return CharCode.upwardsArrow;
+          return CharGlyph.fromCharCode(CharCode.upwardsArrow);
         }
       case Direction.e:
         {
-          return CharCode.rightwardsArrow;
+          return CharGlyph.fromCharCode(CharCode.rightwardsArrow);
         }
       case Direction.s:
         {
-          return CharCode.downwardsArrow;
+          return CharGlyph.fromCharCode(CharCode.downwardsArrow);
         }
       case Direction.w:
         {
-          return CharCode.leftwardsArrow;
+          return CharGlyph.fromCharCode(CharCode.leftwardsArrow);
         }
       default:
         {
-          return CharCode.questionMark;
+          return CharGlyph.fromCharCode(CharCode.questionMark);
         }
     }
   }

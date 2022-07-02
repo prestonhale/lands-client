@@ -51,22 +51,19 @@ class GamePanel extends Panel {
       var tile = game.stage[pos];
 
       glyph = _tileGlyph(pos, tile);
+      var tileBackground = glyph.back;
 
       var actor = game.stage.actorAt(pos);
       var resource = game.stage.resourceAt(pos);
       if (actor != null) {
-        var appearance = actor.appearance;
-        if (appearance is Glyph) {
-          glyph = appearance as VecGlyph;
-        } else if (appearance is int) {
-          // Player.
-          fore = _gameScreen.playerColor;
-          back = glyph.back; // Use the tiles background color
-          glyph = CharGlyph.fromCharCode(appearance, fore, back);
-        }
+        glyph = actor.appearance as Glyph;
       } else if (resource != null) {
         glyph = resource.appearance;
       }
+
+      // All actors and resources should show the tile's background color
+      // through their glyph.
+      glyph = glyph.replaceBackground(tileBackground);
 
       // TODO: No need to render empty tiles
       if (glyph != null) {
