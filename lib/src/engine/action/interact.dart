@@ -17,10 +17,12 @@ class InteractAction extends Action {
     late ActionResult result;
     var target = player.target;
     if (target != null) {
+      // TODO: Resources need to be able to tell this function if they should be
+      //  "untargetted", such as when they're destroyed, or stay targeted.
       result = target.interact(player);
-
-      // If we're not targeting a resource, assume we'd like to setup camp.
+      player.target = null;
     } else {
+      // If we're not targeting a resource, assume we'd like to setup camp.
       result = setupCamp();
     }
 
@@ -29,7 +31,6 @@ class InteractAction extends Action {
 
   /// Add a camp object to the map.
   /// TODO: Setting up camp should take time.
-  /// TODO: Setting up camp should automatically tear down other camps.
   ActionResult setupCamp() {
     late Vec targetPos;
     // Assume place camp to south if player is not facing a direction.

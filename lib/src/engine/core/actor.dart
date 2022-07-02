@@ -1,11 +1,11 @@
 import 'package:piecemeal/piecemeal.dart';
 
+import 'package:lands/src/engine/stage/resource.dart';
 import 'package:lands/src/engine/core/game.dart';
 import 'package:lands/src/engine/action/action.dart';
 
 abstract class Actor {
   final Game game;
-
   Object get appearance;
 
   bool get needsInput => false;
@@ -20,6 +20,13 @@ abstract class Actor {
       _pos = value;
     }
   }
+
+  // Should non-player actors have targets?
+  Resource? _target;
+
+  Resource? get target => _target;
+
+  set target(Resource? resource) => _target = resource;
 
   // Should non-player actors have directions;
   Direction _direction;
@@ -60,6 +67,8 @@ abstract class Actor {
     game.stage.moveActor(from, to);
   }
 
+  /// Can the actor occupy the tile at [pos]. Does no checking of game state at
+  /// [pos] (actors, resources, etc.).
   bool canOccupy(Vec pos) {
     if (pos.x < 0) return false;
     if (pos.x >= game.stage.width) return false;

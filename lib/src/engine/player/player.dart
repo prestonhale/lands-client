@@ -22,19 +22,6 @@ class Player extends Actor {
     return _behavior == null;
   }
 
-  Resource? get target {
-    if (direction == Direction.none) {
-      return null;
-    }
-
-    try {
-      return game.stage.resourceAt(pos + direction.adjustmentVec);
-    } on RangeError {
-      // We're pointing at the stage border
-      return null;
-    }
-  }
-
   @override
   Object get appearance {
     switch (direction) {
