@@ -8,8 +8,8 @@ abstract class Actor {
   final Game game;
   Object get appearance;
 
-  static final int speed = 6; // Times this actor can move every 2 seconds.
-  static final int moveMs = 2000 ~/ speed;
+  static final int speed = 10; // Times this actor can move every 2 seconds.
+  int get moveMs => 2000 ~/ speed;
 
   num lastMoved = 0;
 

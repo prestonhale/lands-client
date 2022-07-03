@@ -1,3 +1,5 @@
+import 'dart:web_gl';
+
 import 'package:piecemeal/piecemeal.dart';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
@@ -22,6 +24,11 @@ class GameScreen extends Screen<Input> {
   late final GamePanel _gamePanel;
   late final ResourcePanel _resourcePanel;
 
+  bool isNorthHeld = false;
+  bool isEastHeld = false;
+  bool isSouthHeld = false;
+  bool isWestHeld = false;
+
   GameScreen(this.game) {
     _gamePanel = GamePanel(this);
     _resourcePanel = ResourcePanel(this);
@@ -44,16 +51,44 @@ class GameScreen extends Screen<Input> {
         break;
 
       case Input.n:
-        action = WalkAction(game.player, Direction.n);
+        isNorthHeld = true;
+        if (isEastHeld) {
+          action = WalkAction(game.player, Direction.ne);
+        } else if (isWestHeld) {
+          action = WalkAction(game.player, Direction.nw);
+        } else {
+          action = WalkAction(game.player, Direction.n);
+        }
         break;
       case Input.e:
-        action = WalkAction(game.player, Direction.e);
+        isEastHeld = true;
+        if (isNorthHeld) {
+          action = WalkAction(game.player, Direction.ne);
+        } else if (isSouthHeld) {
+          action = WalkAction(game.player, Direction.se);
+        } else {
+          action = WalkAction(game.player, Direction.e);
+        }
         break;
       case Input.s:
-        action = WalkAction(game.player, Direction.s);
+        isSouthHeld = true;
+        if (isEastHeld) {
+          action = WalkAction(game.player, Direction.se);
+        } else if (isWestHeld) {
+          action = WalkAction(game.player, Direction.sw);
+        } else {
+          action = WalkAction(game.player, Direction.s);
+        }
         break;
       case Input.w:
-        action = WalkAction(game.player, Direction.w);
+        isWestHeld = true;
+        if (isNorthHeld) {
+          action = WalkAction(game.player, Direction.nw);
+        } else if (isSouthHeld) {
+          action = WalkAction(game.player, Direction.sw);
+        } else {
+          action = WalkAction(game.player, Direction.w);
+        }
         break;
 
       case Input.dirN:
@@ -73,6 +108,25 @@ class GameScreen extends Screen<Input> {
     if (action != null) game.player.setNextAction(action);
 
     return true;
+  }
+
+  @override
+  bool keyUp(int keyCode, {required bool shift, required bool alt}) {
+    switch (keyCode) {
+      case KeyCode.w:
+        isNorthHeld = false;
+        return true;
+      case KeyCode.d:
+        isEastHeld = false;
+        return true;
+      case KeyCode.s:
+        isSouthHeld = false;
+        return true;
+      case KeyCode.a:
+        isWestHeld = false;
+        return true;
+    }
+    return false;
   }
 
   Color get playerColor {

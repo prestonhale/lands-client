@@ -24,7 +24,7 @@ class Player extends Actor {
 
   @override
   Object get appearance {
-    if (carrying != null){
+    if (carrying != null) {
       return CharGlyph.fromCharCode(CharCode.at, Color.green);
     }
     switch (direction) {
@@ -53,6 +53,14 @@ class Player extends Actor {
           return CharGlyph.fromCharCode(CharCode.questionMark);
         }
     }
+  }
+
+  @override
+  bool canMove(num gameTime) {
+    // TODO: The additional ms delay for carrying should depend on WHAT is 
+    //  being carried.
+    if (carrying != null) return (gameTime - lastMoved) >= moveMs + 400;
+    return (gameTime - lastMoved) >= moveMs;
   }
 
   @override

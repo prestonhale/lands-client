@@ -24,7 +24,7 @@ class CactusInteraction implements Interaction {
     var stage = resource.game.stage;
     stage.removeResource(resource);
 
-    actor.carrying = resource;
+    player.carrying = resource;
 
     return ActionResult.success;
   }
