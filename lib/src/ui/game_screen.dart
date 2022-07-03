@@ -80,8 +80,8 @@ class GameScreen extends Screen<Input> {
   }
 
   @override
-  void update() {
-    var result = game.update();
+  void update(num time) {
+    var result = game.update(time);
 
     if (result.needsRefresh) dirty();
   }

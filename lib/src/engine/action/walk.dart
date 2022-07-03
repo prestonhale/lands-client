@@ -1,5 +1,6 @@
 import 'package:piecemeal/piecemeal.dart';
 import 'package:lands/src/engine/action/action.dart';
+import 'package:lands/src/engine/player/player.dart';
 
 class WalkAction extends Action {
   final Direction dir;
@@ -19,12 +20,20 @@ class WalkAction extends Action {
       actor.target = resource;
       return ActionResult.success;
     }
-    
+
+    var game = actor.game;
+
+    if (!actor.canMove(game.lastFrameTime)) {
+      actor.setNextAction(this);
+      return ActionResult.failure;
+    }
+
     if (!actor.canOccupy(pos)) {
       return ActionResult.failure;
     }
 
     actor.target = null;
+    actor.lastMoved = game.lastFrameTime;
     actor.pos = pos;
 
     return ActionResult.success;

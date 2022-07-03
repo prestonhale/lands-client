@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:html' as html;
 import 'dart:convert' show utf8;
 
-import 'package:lands/src/engine/stage/tile.dart';
 import 'package:lands/src/engine/stage/serializer.dart';
 import 'package:lands/src/ui/draw.dart';
 import 'package:malison/malison.dart';
@@ -84,7 +83,6 @@ void main() async {
     // TODO: Can we poll at a lesser rate? We're placing a LOT of cactuses on
     //  same square atm. Does this matter?
     if (_placing) {
-      var stage = _game.stage;
       var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt() - selectionPanelOffset);
       var pos = terminal.pixelToChar(pixel);
 

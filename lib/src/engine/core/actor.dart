@@ -8,6 +8,11 @@ abstract class Actor {
   final Game game;
   Object get appearance;
 
+  static final int speed = 6; // Times this actor can move every 2 seconds.
+  static final int moveMs = 2000 ~/ speed;
+
+  num lastMoved = 0;
+
   bool get needsInput => false;
 
   Vec _pos;
@@ -32,6 +37,13 @@ abstract class Actor {
   Direction _direction;
 
   Direction get direction => _direction;
+
+  bool canMove(num gameTime) {
+    return (gameTime - lastMoved) >= moveMs;
+  }
+
+  // Noop for NPCs but used on players
+  void setNextAction(Action action) {}
 
   set direction(Direction value) {
     if (value != _direction) {

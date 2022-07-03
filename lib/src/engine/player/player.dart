@@ -55,6 +55,7 @@ class Player extends Actor {
     }
   }
 
+  @override
   void setNextAction(Action action) {
     _behavior = ActionBehavior(action);
   }

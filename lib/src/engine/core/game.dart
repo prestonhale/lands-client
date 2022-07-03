@@ -4,9 +4,7 @@ import 'dart:html';
 
 import 'package:piecemeal/piecemeal.dart';
 
-import 'package:lands/src/engine/stage/resource.dart';
 import 'package:lands/src/engine/core/actor.dart';
-import 'package:lands/src/engine/stage/tile.dart';
 import 'package:lands/src/engine/stage/stage.dart';
 import 'package:lands/src/engine/stage/serializer.dart';
 import 'package:lands/src/engine/player/player.dart';
@@ -15,6 +13,8 @@ import 'package:lands/src/engine/action/action.dart';
 class Game {
   late Stage _stage;
   late Player player;
+
+  num lastFrameTime = 0;
 
   bool ready = false;
   bool _prevReadyState = false;
@@ -56,6 +56,7 @@ class Game {
           stage.addResource(resourceType.newResource(this, pos));
         }
       }
+
     }
     player = Player(this, stage.bounds.center);
     _stage.addActor(player);
@@ -63,7 +64,7 @@ class Game {
     print("[Layout Generation] Done");
   }
 
-  GameResult update() {
+  GameResult update(num frameTime) {
     if (!ready) {
       return GameResult(false);
     }
@@ -76,6 +77,8 @@ class Game {
     }
 
     var stateWasUpdated = false;
+
+    lastFrameTime = frameTime;
 
     while (true) {
       // If any actions are already pending, process them until empty.
