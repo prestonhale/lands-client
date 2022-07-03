@@ -5,12 +5,6 @@ abstract class Panel {
   Rect? _bounds;
   bool isVisible = true;
 
-  /// Tracks whether this panel should appear above other panels on this screen.
-  // This will have a performance implication.
-  // Don't force the game to rerender these glyphs just ensure they're not
-  // superseded by OTHER panels changed glyphs.
-  bool pinToTop = false;
-
   /// The bounding box for the panel.
   ///
   /// This can only be called if the panel is visible.
@@ -35,8 +29,8 @@ abstract class Panel {
   }
 
   void render(Terminal terminal) {
-    if (!isVisible) return;
     renderPanel(terminal.rect(bounds.x, bounds.y, bounds.width, bounds.height));
+    if (!isVisible) return;
   }
 
   void renderPanel(Terminal terminal);

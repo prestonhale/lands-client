@@ -81,12 +81,13 @@ class Draw {
 
   static void thinMeter(
       Terminal terminal, int x, int y, int width, int value, int max,
-      [Color? fore, Color? back]) {
+      [TriPhaseColor? colors, int? newValue]) {
     assert(max != 0);
-    fore ??= red;
-    back ??= maroon;
+    var fore = colors?.fore ?? red;
+    var back = colors?.back ?? maroon;
 
     var barWidth = (width * value / max).round();
+    var newBarWidth = newValue != null ? (width * newValue / max).round() : 0;
 
     // Edge cases, don't show an empty or full bar unless we're all the
     // way empty or full.
@@ -95,6 +96,14 @@ class Draw {
 
     for (var i = 0; i < width; i++) {
       var color = i < barWidth ? fore : back;
+      // The new value will move the bar forward.
+      if (newValue != null && newBarWidth > barWidth) {
+        color = i >= barWidth && i < newBarWidth ? Color.green : color;
+      }
+      // The new value will move the bar backwards.
+      if (newValue != null && newBarWidth < barWidth) {
+        color = i <= barWidth && i > newBarWidth ? Color.purple : color;
+      }
       terminal.drawChar(x + i, y, CharCode.lowerHalfBlock, color);
     }
   }

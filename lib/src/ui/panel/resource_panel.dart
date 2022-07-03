@@ -9,9 +9,6 @@ class ResourcePanel extends Panel {
   ResourcePanel(this._gameScreen);
 
   @override
-  bool get pinToTop => true;
-
-  @override
   void renderPanel(Terminal terminal) {
     var target = _gameScreen.game.player.target;
     if (target != null) {

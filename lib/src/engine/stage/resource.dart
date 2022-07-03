@@ -50,6 +50,8 @@ class CampInteraction implements Interaction {
   int count = 0;
   int max = 3;
 
+  int quality = 0;
+
   @override
   ActionResult interact(Resource resource, Actor actor) {
     print("[Interact] Camp");
@@ -63,14 +65,22 @@ class CampInteraction implements Interaction {
     }
 
     if (player.carrying != null) {
+      var newResource = player.carrying!;
       player.carrying = null;
       if (count == max) {
+        // TODO: Maybe let the player REPLACE an existing resource here.
         return ActionResult.failure;
       } else {
+        quality = newQuality(newResource);
+        print(quality);
         count++;
       }
     }
     return ActionResult.success;
+  }
+
+  int newQuality(Resource resource) {
+    return ((quality * count) + resource.quality) ~/ (count + 1);
   }
 
   /// Gives the [Pack] to the player if the player's carry slot is free.
@@ -90,7 +100,7 @@ class CampInteraction implements Interaction {
             ResourceType.cactusPack.newResource(player.game, foundPos);
         stage.addResource(resource);
       } else {
-        // There's no adjacent empty positions, do not empty camp and do not 
+        // There's no adjacent empty positions, do not empty camp and do not
         // produce a pack.
         return false;
       }
@@ -120,8 +130,10 @@ class NoTargetPanel implements TargetPanelRenderer {
 class HarvestTargetPanel implements TargetPanelRenderer {
   @override
   void render(Resource resource, Terminal terminal) {
+    var height = 8;
+
     // Framing Box
-    Draw.frame(terminal, 0, 0, terminal.width, terminal.height);
+    Draw.frame(terminal, 0, 0, terminal.width, height);
     Draw.box(terminal, 2, 1, 3, 3);
 
     // Resource Image and Name
@@ -137,11 +149,19 @@ class HarvestTargetPanel implements TargetPanelRenderer {
 }
 
 class CampTargetPanel implements TargetPanelRenderer {
+  static final height = 9;
+  static final qualityRow = 7;
+  static final meterColors =
+      TriPhaseColor(fore: red, back: maroon, complete: peaGreen);
+
   @override
   void render(Resource resource, Terminal terminal) {
     var interaction = resource.interaction as CampInteraction;
+    print(interaction.count);
+    print(interaction.quality);
+
     // Framing Box
-    Draw.frame(terminal, 0, 0, terminal.width, terminal.height);
+    Draw.frame(terminal, 0, 0, terminal.width, height);
     Draw.box(terminal, 2, 1, 3, 3);
 
     // Camp image
@@ -151,10 +171,26 @@ class CampTargetPanel implements TargetPanelRenderer {
     // Amount collected
     terminal.writeAt(1, 5, "Cactus");
     terminal.writeAt(9, 5, interaction.count.toString());
-    var meterColors =
-        TriPhaseColor(fore: red, back: maroon, complete: sherwood);
     Draw.chunkedMeter(terminal, 12, 5, terminal.width - 13, interaction.count,
         interaction.max, meterColors);
+
+    // Quality meter
+    var carrying = resource.game.player.carrying;
+
+    terminal.writeAt(1, qualityRow, "Quality");
+    if (carrying != null) {
+      var newQuality = interaction.newQuality(resource.game.player.carrying!);
+
+      terminal.writeAt(
+          8, qualityRow, "(${newQuality.toString()})", Color.lightGreen);
+
+      Draw.thinMeter(terminal, 12, qualityRow, terminal.width - 13,
+          interaction.quality, 100, meterColors, newQuality);
+    } else {
+      terminal.writeAt(9, qualityRow, interaction.quality.toString());
+      Draw.thinMeter(terminal, 12, qualityRow, terminal.width - 13,
+          interaction.quality, 100);
+    }
   }
 }
 
@@ -238,7 +274,7 @@ class ResourceType {
       () => NoOpInteraction(),
       NoTargetPanel());
 
-  static final desert = [reed, cactus];
+  static final desert = [reed, cactus, craftingSpot];
 
   final bool solid;
 

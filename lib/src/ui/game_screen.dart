@@ -16,7 +16,6 @@ import 'package:lands/src/engine/action/walk.dart';
 import 'package:lands/src/engine/action/interact.dart';
 
 const resourcePanelWidth = 24;
-const resourcePanelHeight = 8;
 
 class GameScreen extends Screen<Input> {
   final Game game;
@@ -143,8 +142,11 @@ class GameScreen extends Screen<Input> {
   @override
   void resize(Vec terminalSize) {
     _gamePanel.setBounds(Rect(0, 0, terminalSize.x, terminalSize.y));
+    // Resource panels are full height by default so that the panel's logic can
+    // control the height. If we specify a height here, the actual height can 
+    // never exceed that height.
     _resourcePanel.setBounds(Rect(terminalSize.x ~/ 2 - resourcePanelWidth ~/ 2,
-        0, resourcePanelWidth, resourcePanelHeight));
+        0, resourcePanelWidth, terminalSize.y));
   }
 
   @override
