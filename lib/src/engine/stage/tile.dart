@@ -1,9 +1,7 @@
-import 'dart:html';
-
 import '../../hues.dart';
 import 'package:piecemeal/piecemeal.dart';
 import 'package:malison/malison.dart';
-import 'package:lands/src/engine/stage/resource.dart';
+import 'package:lands/src/engine/core/math.dart';
 
 class Tile {
   TileType type = TileType.uninitialized;
@@ -42,7 +40,9 @@ class TileTypes {
   // Empty
 
   // General
-  static final sea = tile("sea", Vec(23, 7), blue, darkBlue).solid();
+  static final sea = tile("sea", Vec(23, 7), blue, darkBlue)
+      .animate(40, 0.7, darkBlue, darkBlue)
+      .solid();
   static final shield = tile("shield", Vec(23, 7), blue, darkBlue).solid();
 
   // Walls.
@@ -66,7 +66,9 @@ class TileTypes {
   // Desert
   static final sand1 = tile("sand1", Vec(14, 7), warmGray, gold).open();
   static final sand2 = tile("sand2", Vec(13, 7), warmGray, gold).open();
-  static final water = tile("water", Vec(23, 7), lightBlue, blue).solid();
+  static final water = tile("water", Vec(23, 7), lightBlue, blue)
+      .animate(40, 0.3, darkBlue, darkerCoolGray)
+      .solid();
 
   static final desert = [
     error,
@@ -115,6 +117,23 @@ class _TileBuilder {
     var glyph = glyphs.first as VecGlyph;
     glyphs[0] = VecGlyph.fromVec(glyph.vec, glyph.fore.blend(fore, amount),
         glyph.back.blend(fore, amount));
+    return this;
+  }
+
+  _TileBuilder animate(int count, double maxMix, Color fore, Color back) {
+    var glyph = glyphs.first;
+    for (var i = 1; i < count; i++) {
+      var mixedFore =
+          glyph.fore.blend(fore, lerpDouble(i, 0, count, 0.0, maxMix));
+      var mixedBack =
+          glyph.back.blend(back, lerpDouble(i, 0, count, 0.0, maxMix));
+
+      if (glyph is VecGlyph) {
+        glyphs.add(VecGlyph.fromVec(glyph.vec, mixedFore, mixedBack));
+      } else {
+        throw ("Can't animate non-vector glyphs.");
+      }
+    }
     return this;
   }
 

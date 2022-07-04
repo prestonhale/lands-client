@@ -136,6 +136,10 @@ class GameScreen extends Screen<Input> {
   void update(num time) {
     var result = game.update(time);
 
+    // The game panel may need to update animations even if the game state has
+    // not changed
+    if (_gamePanel.update(result.events)) dirty();
+
     if (result.needsRefresh) dirty();
   }
 
@@ -143,7 +147,7 @@ class GameScreen extends Screen<Input> {
   void resize(Vec terminalSize) {
     _gamePanel.setBounds(Rect(0, 0, terminalSize.x, terminalSize.y));
     // Resource panels are full height by default so that the panel's logic can
-    // control the height. If we specify a height here, the actual height can 
+    // control the height. If we specify a height here, the actual height can
     // never exceed that height.
     _resourcePanel.setBounds(Rect(terminalSize.x ~/ 2 - resourcePanelWidth ~/ 2,
         0, resourcePanelWidth, terminalSize.y));

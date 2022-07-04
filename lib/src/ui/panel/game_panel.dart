@@ -30,6 +30,7 @@ class GamePanel extends Panel {
   GamePanel(this._gameScreen);
 
   bool update(Iterable<Event> event) {
+    print('update');
     _frame++;
 
     // return _hasAnimatedTile || hadEffects
@@ -86,14 +87,15 @@ class GamePanel extends Panel {
     var period = glyphs.length * 2 - 2;
 
     // Calculate a "random" but consistent phase for each position
-    var phase = hashPoint(pos.x, pos.y);
-    var frame = (_frame ~/ 8 + phase) % period;
-    if (frame >= glyphs.length) {
-      frame = glyphs.length - (frame - glyphs.length) - 1;
+    var phase = hashPoint(pos.x, pos.y); // Static for each tile
+    var animationFrame = (_frame ~/ 8 + phase) % period;
+    if (animationFrame >= glyphs.length) {
+      animationFrame = glyphs.length - (animationFrame - glyphs.length) - 1;
     }
+    print(_frame);
 
     _hasAnimatedTile = true;
-    return glyphs[frame];
+    return glyphs[animationFrame];
   }
 
   void drawStageGlyph(Terminal terminal, int x, int y, Glyph glyph) {
