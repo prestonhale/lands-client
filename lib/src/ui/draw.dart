@@ -96,13 +96,20 @@ class Draw {
 
     for (var i = 0; i < width; i++) {
       var color = i < barWidth ? fore : back;
+
+      // If we have a [newValue] color the bar to reflect an increase or
+      // decrease.
+      // The new value will not move the bar (so we just color the last block).
+      if (newValue != null && newBarWidth == barWidth) {
+        color = newValue > value ? Color.green : Color.purple;
+      }
       // The new value will move the bar forward.
       if (newValue != null && newBarWidth > barWidth) {
         color = i >= barWidth && i < newBarWidth ? Color.green : color;
       }
       // The new value will move the bar backwards.
       if (newValue != null && newBarWidth < barWidth) {
-        color = i <= barWidth && i > newBarWidth ? Color.purple : color;
+        color = i < barWidth && i >= newBarWidth ? Color.purple : color;
       }
       terminal.drawChar(x + i, y, CharCode.lowerHalfBlock, color);
     }

@@ -17,10 +17,12 @@ class InteractAction extends Action {
     late ActionResult result;
     var target = player.target;
     if (target != null) {
-      // TODO: Resources need to be able to tell this function if they should be
-      //  "untargetted", such as when they're destroyed, or stay targeted.
+      var targetPos = player.target!.pos;
       result = target.interact(player);
-      player.target = null;
+
+      // If the resource was destroyed, clear target. Otherwise, keep targeted.
+      // TODO: Long chain of pointers.
+      player.target = player.game.stage.resourceAt(targetPos);
     } else {
       // If we're not targeting a resource, assume we'd like to setup camp.
       result = setupCamp();
@@ -56,3 +58,6 @@ class InteractAction extends Action {
     return ActionResult.success;
   }
 }
+
+// newBarWidth = 7
+// barWidth = 7
