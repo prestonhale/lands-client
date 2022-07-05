@@ -35,7 +35,6 @@ class GameScreen extends Screen<Input> {
 
   factory GameScreen.main(Content content) {
     var game = Game();
-    print("generate");
     for (var _ in game.generate());
 
     return GameScreen(game);

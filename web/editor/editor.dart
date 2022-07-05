@@ -15,6 +15,8 @@ final document = html.document;
 late RenderableTerminal terminal;
 
 var charSize = 16;
+var selectionPanelHeight = 8;
+var selectionPanelOffset = charSize * selectionPanelHeight;
 
 int selectedTileIndex = 0;
 int selectedResourceIndex = -1;
@@ -29,14 +31,15 @@ void main() async {
   await checkGame();
 
   var stage = _game.stage;
-  var selectionPanelOffset = charSize * 11;
 
   // TODO: Make this work with browser scale not just terminal scale.
   var scale = 1;
-  terminal = RetroTerminal(stage.width, stage.height + selectionPanelOffset, "../font_16.png",
+  terminal = RetroTerminal(
+      stage.width, stage.height + selectionPanelOffset, "../font_16.png",
       canvas: canvas, charWidth: charSize, charHeight: charSize, scale: scale);
   canvas.width = (stage.width * charSize * scale).round();
-  canvas.height = (stage.height * charSize * scale + selectionPanelOffset).round();
+  canvas.height =
+      (stage.height * charSize * scale + selectionPanelOffset).round();
   render();
 
   // contextMenu is 'javascript' for right-click.
@@ -44,7 +47,8 @@ void main() async {
     var tile = TileTypes.sand1;
 
     var stage = _game.stage;
-    var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt() - selectionPanelOffset);
+    var pixel = Vec(
+        event.offset.x.toInt(), event.offset.y.toInt() - selectionPanelOffset);
     var pos = terminal.pixelToChar(pixel);
 
     stage[pos].type = tile;
@@ -83,7 +87,8 @@ void main() async {
     // TODO: Can we poll at a lesser rate? We're placing a LOT of cactuses on
     //  same square atm. Does this matter?
     if (_placing) {
-      var pixel = Vec(event.offset.x.toInt(), event.offset.y.toInt() - selectionPanelOffset);
+      var pixel = Vec(event.offset.x.toInt(),
+          event.offset.y.toInt() - selectionPanelOffset);
       var pos = terminal.pixelToChar(pixel);
 
       placeSelection(pos);
@@ -171,7 +176,6 @@ void switchTileOrResourceSelection() {
 /// Immediately prompt to download the current stage layout as a txt file.
 void save() {
   var stage = _game.stage;
-  print("saving");
 
   var stringMap = "";
 
@@ -194,7 +198,6 @@ void save() {
 
     // Reached the next row so add newline.
   }
-  print("generated");
 
   html.AnchorElement()
     ..href =
@@ -213,14 +216,14 @@ Future<void> checkGame() async {
 
 // Todo: Synchronize this with the actual game render func
 void render() {
-  renderGameStage(terminal.rect(0, 11, _game.stage.width, _game.stage.height));
+  renderGameStage(terminal.rect(0, selectionPanelHeight, _game.stage.width, _game.stage.height));
 
   // TODO: The scroll on this is pretty janky. Consider breaking the map out
   //  into its own terminal rather than relying on browser based scroll events.
   var x = html.window.scrollX ~/ charSize;
   var y = html.window.scrollY ~/ charSize;
   var viewportWidth = document.documentElement!.clientWidth ~/ charSize;
-  renderSelectionBox(terminal.rect(x, y, viewportWidth, 11));
+  renderSelectionBox(terminal.rect(x, y, viewportWidth, selectionPanelHeight));
 
   terminal.render();
 }
@@ -272,30 +275,19 @@ void renderSelectionBox(Terminal terminal) {
 
     var appearance = TileTypes.desert[i].appearance;
 
-    terminal.drawGlyph(
-        frameTopLeft.x + 1, frameTopLeft.y + 1, appearance as VecGlyph);
+    VecGlyph glyph;
+    if (appearance is List<Glyph>) {
+      glyph = appearance.first as VecGlyph;
+    } else {
+      glyph = appearance as VecGlyph;
+    }
+    terminal.drawGlyph(frameTopLeft.x + 1, frameTopLeft.y + 1, glyph);
   }
 
   // Harvestables.
   terminal.writeAt(1, 5, "Resrcs:");
   for (var i = 0; i < ResourceType.desert.length; i++) {
     var frameTopLeft = Vec(8 + (3 * i), 4);
-    Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3);
-
-    if (i == selectedResourceIndex) {
-      Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3, Color.white);
-    }
-
-    var appearance = ResourceType.desert[i].appearance;
-
-    terminal.drawGlyph(
-        frameTopLeft.x + 1, frameTopLeft.y + 1, appearance as VecGlyph);
-  }
-
-  // Special
-  terminal.writeAt(1, 8, "Special:");
-  for (var i = 0; i < ResourceType.desert.length; i++) {
-    var frameTopLeft = Vec(8 + (3 * i), 7);
     Draw.box(terminal, frameTopLeft.x, frameTopLeft.y, 3, 3);
 
     if (i == selectedResourceIndex) {

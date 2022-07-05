@@ -62,7 +62,7 @@ void main() {
   _ui.keyPress.bind(Input.e, KeyCode.d);
   _ui.keyPress.bind(Input.s, KeyCode.s);
   _ui.keyPress.bind(Input.w, KeyCode.a);
-  
+
   _ui.keyPress.bind(Input.dirN, KeyCode.w, shift: true);
   _ui.keyPress.bind(Input.dirE, KeyCode.d, shift: true);
   _ui.keyPress.bind(Input.dirS, KeyCode.s, shift: true);
@@ -166,7 +166,9 @@ RetroTerminal _makeTerminal(
       canvas: canvas,
       charWidth: charWidth,
       charHeight: charHeight,
-      scale: html.window.devicePixelRatio.toInt());
+      scale: html.window.devicePixelRatio.toInt(),
+      zoom: 2
+    );
 }
 
 /// Updates the character dimensions of the current terminal to fit the screen

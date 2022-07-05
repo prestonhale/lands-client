@@ -72,7 +72,6 @@ class CampInteraction implements Interaction {
         return ActionResult.failure;
       } else {
         quality = newQuality(newResource);
-        print(quality);
         count++;
       }
     }
@@ -157,8 +156,6 @@ class CampTargetPanel implements TargetPanelRenderer {
   @override
   void render(Resource resource, Terminal terminal) {
     var interaction = resource.interaction as CampInteraction;
-    print(interaction.count);
-    print(interaction.quality);
 
     // Framing Box
     Draw.frame(terminal, 0, 0, terminal.width, height);
@@ -192,6 +189,15 @@ class CampTargetPanel implements TargetPanelRenderer {
           interaction.quality, 100);
     }
   }
+}
+
+class CraftingTargetPanel extends TargetPanelRenderer {
+
+  @override
+  void render(Resource resource, Terminal terminal) {
+
+  }
+
 }
 
 class Resource {
@@ -257,17 +263,17 @@ class ResourceType {
 
   static final craftingSpot = ResourceType(
       'crafting spot',
-      VecGlyph.fromVec(Vec(3, 7), peaGreen, gold),
-      TileTypes.flagstoneWall,
+      VecGlyph.fromVec(Vec(11, 0), brown, gold),
+      TileTypes.box,
       true,
       () => CraftingInteraction(),
-      NoTargetPanel());
+      CraftingTargetPanel());
 
   // This could be a generic "pack" but then we'd need the concept of a
   // ResourceType...type. E.g. we'd need to parametrize the pack at creation
   // with a resource type (a pack OF cactus).
   static final cactusPack = ResourceType(
-      'cactusPack2',
+      'cactusPack',
       VecGlyph.fromVec(Vec(29, 4), peaGreen, gold),
       TileTypes.sand1,
       true,

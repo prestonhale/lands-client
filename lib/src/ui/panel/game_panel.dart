@@ -30,7 +30,6 @@ class GamePanel extends Panel {
   GamePanel(this._gameScreen);
 
   bool update(Iterable<Event> event) {
-    print('update');
     _frame++;
 
     // return _hasAnimatedTile || hadEffects
@@ -92,7 +91,6 @@ class GamePanel extends Panel {
     if (animationFrame >= glyphs.length) {
       animationFrame = glyphs.length - (animationFrame - glyphs.length) - 1;
     }
-    print(_frame);
 
     _hasAnimatedTile = true;
     return glyphs[animationFrame];

@@ -63,6 +63,8 @@ class TileTypes {
       .blend(0.0, darkCoolGray, darkerCoolGray)
       .solid();
 
+  static final box = tile("box", Vec(11, 0), brown, gold).solid();
+
   // Desert
   static final sand1 = tile("sand1", Vec(14, 7), warmGray, gold).open();
   static final sand2 = tile("sand2", Vec(13, 7), warmGray, gold).open();
