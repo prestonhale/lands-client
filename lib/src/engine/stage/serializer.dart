@@ -187,6 +187,8 @@ class SerializerCell {
   static final sandstone1 = SerializerCell.fromTile(TileTypes.sandstone1);
   static final graniteWall = SerializerCell.fromTile(TileTypes.graniteWall);
   static final granite1 = SerializerCell.fromTile(TileTypes.granite1);
+  
+  static final crafting = SerializerCell.fromResource(ResourceType.craftingSpot);
 
   // TODO: Serialize with a byte format not strings.
   //  This is tedious to maintain when adding new tiles.
@@ -204,6 +206,8 @@ class SerializerCell {
 
     "Y": SerializerCell.cactus,
     "r": SerializerCell.reed,
+    
+    "b": SerializerCell.crafting,
   });
 
   factory SerializerCell.rehydrate(String character) {

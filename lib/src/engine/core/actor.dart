@@ -4,6 +4,8 @@ import 'package:lands/src/engine/stage/resource.dart';
 import 'package:lands/src/engine/core/game.dart';
 import 'package:lands/src/engine/action/action.dart';
 
+
+// An active entity. Takes actions independently.
 abstract class Actor {
   final Game game;
   Object get appearance;

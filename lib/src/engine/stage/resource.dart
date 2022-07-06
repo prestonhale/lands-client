@@ -15,6 +15,8 @@ abstract class Interaction {
 }
 
 class CactusInteraction implements Interaction {
+  CactusInteraction call() => CactusInteraction();
+
   @override
   ActionResult interact(Resource resource, Actor actor) {
     print("[Interact] Cactus");
@@ -30,14 +32,6 @@ class CactusInteraction implements Interaction {
   }
 }
 
-class CraftingInteraction implements Interaction {
-  @override
-  ActionResult interact(Resource resource, Actor actor) {
-    print("[Interact] Crafting");
-    return ActionResult.success;
-  }
-}
-
 class PackInteraction implements Interaction {
   @override
   ActionResult interact(Resource resource, Actor actor) {
@@ -48,9 +42,12 @@ class PackInteraction implements Interaction {
 
 class CampInteraction implements Interaction {
   int count = 0;
-  int max = 3;
+  // TODO: PUT BACK TO 3! 1 is just for testing purposes.
+  int max = 1;
 
   int quality = 0;
+
+  CampInteraction call() => CampInteraction();
 
   @override
   ActionResult interact(Resource resource, Actor actor) {
@@ -109,12 +106,60 @@ class CampInteraction implements Interaction {
   }
 }
 
+class CraftingInteraction implements Interaction {
+  final List<ResourceType> requiredResourceTypes;
+  // TODO: We won't really produce most of the time, these will be bespoke interactions to improve something the player owns.
+
+  final ResourceType produces;
+
+  int resourceIndex = 0;
+  List<bool> resourceDeposited;
+
+  static Interaction newBoatCrafting() {
+    return CraftingInteraction(
+        [ResourceType.cactusPack, ResourceType.cactusPack], ResourceType.boat);
+  }
+
+  CraftingInteraction(this.requiredResourceTypes, this.produces)
+      : resourceDeposited =
+            List<bool>.filled(requiredResourceTypes.length, false);
+
+  @override
+  ActionResult interact(Resource resource, Actor actor) {
+    print("[Interact] Crafting");
+
+    var player = actor as Player;
+
+    // Crafter is full. Produce product.
+    if (resourceIndex == requiredResourceTypes.length) {
+    }
+
+    // Crafter is not full. See if the player can contribute.
+    if (player.carrying != null) {
+      if (player.carrying!.type == requiredResourceTypes[resourceIndex]) {
+        resourceDeposited[resourceIndex] = true;
+        ++resourceIndex;
+
+        player.carrying = null;
+        return ActionResult.success;
+      } else {
+        // Report to the player that they've got the wrong pack somehow.
+        return ActionResult.failure;
+      }
+    }
+
+    return ActionResult.success;
+  }
+}
+
 class NoOpInteraction implements Interaction {
   @override
   ActionResult interact(Resource resource, Actor actor) {
     print("[Interact] NoOP");
     return ActionResult.success;
   }
+
+  NoOpInteraction call() => NoOpInteraction();
 }
 
 // Represents how the "Resource Panel" ui element should show present resource.
@@ -192,12 +237,29 @@ class CampTargetPanel implements TargetPanelRenderer {
 }
 
 class CraftingTargetPanel extends TargetPanelRenderer {
-
   @override
   void render(Resource resource, Terminal terminal) {
+    var interaction = resource.interaction as CraftingInteraction;
 
+    Draw.frame(terminal, 0, 0, terminal.width, 5);
+    terminal.writeAt(2, 0, "Crafting");
+
+    for (var i = 0; i < interaction.requiredResourceTypes.length; ++i) {
+      var resourceType = interaction.requiredResourceTypes[i];
+      var leftPos = 6 + (i * 3);
+
+      // Row showing the resources needed to craft and whether they've been deposited.
+      terminal.writeAt(1, 2, "Cost");
+      var resourceDeposited = interaction.resourceDeposited[i];
+
+      var borderColor = resourceDeposited ? Color.white : Color.darkGray;
+      Draw.box(terminal, leftPos, 1, 3, 3, borderColor);
+
+      double blendPct = resourceDeposited ? 0 : 0.6;
+      terminal.drawGlyph(leftPos + 1, 2,
+          resourceType.appearance.blend(Color.darkGray, blendPct));
+    }
   }
-
 }
 
 class Resource {
@@ -242,7 +304,7 @@ class ResourceType {
       VecGlyph.fromVec(Vec(27, 7), sherwood, gold),
       TileTypes.sand1,
       false,
-      () => NoOpInteraction(),
+      NoOpInteraction(),
       HarvestTargetPanel());
 
   static final cactus = ResourceType(
@@ -250,7 +312,7 @@ class ResourceType {
       VecGlyph.fromVec(Vec(29, 4), peaGreen, gold),
       TileTypes.sand1,
       true,
-      () => CactusInteraction(),
+      CactusInteraction(),
       HarvestTargetPanel());
 
   static final camp = ResourceType(
@@ -258,7 +320,7 @@ class ResourceType {
       VecGlyph.fromVec(Vec(3, 7), peaGreen, gold),
       TileTypes.flagstoneWall,
       true,
-      () => CampInteraction(),
+      CampInteraction(),
       CampTargetPanel());
 
   static final craftingSpot = ResourceType(
@@ -266,8 +328,16 @@ class ResourceType {
       VecGlyph.fromVec(Vec(11, 0), brown, gold),
       TileTypes.box,
       true,
-      () => CraftingInteraction(),
+      CraftingInteraction.newBoatCrafting,
       CraftingTargetPanel());
+
+  static final boat = ResourceType(
+      'boat',
+      VecGlyph.fromVec(Vec(11, 0), brown, gold),
+      TileTypes.box,
+      true,
+      NoOpInteraction(),
+      NoTargetPanel());
 
   // This could be a generic "pack" but then we'd need the concept of a
   // ResourceType...type. E.g. we'd need to parametrize the pack at creation
@@ -277,7 +347,7 @@ class ResourceType {
       VecGlyph.fromVec(Vec(29, 4), peaGreen, gold),
       TileTypes.sand1,
       true,
-      () => NoOpInteraction(),
+      NoOpInteraction(),
       NoTargetPanel());
 
   static final desert = [reed, cactus, craftingSpot];

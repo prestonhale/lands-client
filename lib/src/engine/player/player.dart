@@ -57,7 +57,7 @@ class Player extends Actor {
 
   @override
   bool canMove(num gameTime) {
-    // TODO: The additional ms delay for carrying should depend on WHAT is 
+    // TODO: The additional ms delay for carrying should depend on WHAT is
     //  being carried.
     if (carrying != null) return (gameTime - lastMoved) >= moveMs + 400;
     return (gameTime - lastMoved) >= moveMs;

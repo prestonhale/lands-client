@@ -58,7 +58,7 @@ class Game {
       }
 
     }
-    player = Player(this, stage.bounds.center);
+    player = Player(this, Vec(60, 17));
     _stage.addActor(player);
     ready = true;
     print("[Layout Generation] Done");
